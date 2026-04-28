@@ -379,7 +379,13 @@
       border: 3px solid var(--mint-200);
     }
 
-    .camera-wrap video,
+    .camera-wrap video {
+      width: 100%;
+      display: block;
+      border-radius: var(--radius);
+      transform: scaleX(-1);
+    }
+
     .camera-wrap canvas {
       width: 100%;
       display: block;
@@ -1036,7 +1042,10 @@ btnCapture.addEventListener('click', () => {
   const ctx = photoCanvas.getContext('2d');
   photoCanvas.width = video.videoWidth;
   photoCanvas.height = video.videoHeight;
+  ctx.translate(photoCanvas.width, 0);
+  ctx.scale(-1, 1);
   ctx.drawImage(video, 0, 0);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
 
   // Add date stamp
   const now = new Date();
