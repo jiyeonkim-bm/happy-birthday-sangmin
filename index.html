@@ -986,19 +986,22 @@ renderRollingPaper();
 // IndexedDB (Photo Storage)
 // ══════════════════════════════════════
 const DB_NAME = 'hbd-sangmin-photos';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const STORE_NAME = 'photos';
+let _db = null;
 
 function openDB() {
+  if (_db) return Promise.resolve(_db);
   return new Promise((resolve, reject) => {
     const req = indexedDB.open(DB_NAME, DB_VERSION);
     req.onupgradeneeded = (e) => {
       const db = e.target.result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+      if (db.objectStoreNames.contains(STORE_NAME)) {
+        db.deleteObjectStore(STORE_NAME);
       }
+      db.createObjectStore(STORE_NAME, { keyPath: 'id' });
     };
-    req.onsuccess = () => resolve(req.result);
+    req.onsuccess = () => { _db = req.result; resolve(_db); };
     req.onerror = () => reject(req.error);
   });
 }
@@ -1008,9 +1011,9 @@ async function savePhotoDB(photo) {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE_NAME, 'readwrite');
     const store = tx.objectStore(STORE_NAME);
-    const req = store.add(photo);
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
+    const req = store.put(photo);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
   });
 }
 
@@ -1020,7 +1023,7 @@ async function loadAllPhotos() {
     const tx = db.transaction(STORE_NAME, 'readonly');
     const store = tx.objectStore(STORE_NAME);
     const req = store.getAll();
-    req.onsuccess = () => resolve(req.result.reverse());
+    req.onsuccess = () => resolve(req.result.sort((a, b) => b.id - a.id));
     req.onerror = () => reject(req.error);
   });
 }
@@ -1030,9 +1033,9 @@ async function deletePhotoDB(id) {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE_NAME, 'readwrite');
     const store = tx.objectStore(STORE_NAME);
-    const req = store.delete(id);
-    req.onsuccess = () => resolve();
-    req.onerror = () => reject(req.error);
+    store.delete(id);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
   });
 }
 
@@ -1122,18 +1125,22 @@ btnCapture.addEventListener('click', async () => {
   ctx.font = `bold ${Math.round(photoCanvas.width * 0.025)}px 'Noto Sans KR', sans-serif`;
   ctx.fillText('HBD 상민 🎂', photoCanvas.width - 20, photoCanvas.height - 50);
 
-  const dataUrl = photoCanvas.toDataURL('image/png');
-  const photo = { src: dataUrl, date: stamp };
+  const dataUrl = photoCanvas.toDataURL('image/jpeg', 0.85);
+  const photo = { id: Date.now(), src: dataUrl, date: stamp };
 
-  // Save to IndexedDB
+  // Save to IndexedDB, then update gallery
   try {
-    const id = await savePhotoDB(photo);
-    photo.id = id;
-  } catch (e) { console.error('DB save error:', e); }
-
-  photos.unshift(photo);
-  renderGallery();
-  showPreview(dataUrl);
+    await savePhotoDB(photo);
+    photos.unshift(photo);
+    renderGallery();
+    showPreview(dataUrl);
+  } catch (e) {
+    console.error('DB save error:', e);
+    // Still show even if DB fails
+    photos.unshift(photo);
+    renderGallery();
+    showPreview(dataUrl);
+  }
 });
 
 function renderGallery() {
