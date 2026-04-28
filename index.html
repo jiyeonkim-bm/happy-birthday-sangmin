@@ -1005,12 +1005,25 @@ const photosCollection = db.collection('photos');
 // ══════════════════════════════════════
 async function savePhotoFirebase(dataUrl, stamp) {
   const id = Date.now().toString();
+  // Firestore 1MB 문서 제한 대비: 이미지가 너무 크면 리사이즈
+  let finalUrl = dataUrl;
+  if (dataUrl.length > 800000) {
+    const tmpCanvas = document.createElement('canvas');
+    const tmpCtx = tmpCanvas.getContext('2d');
+    const img = new Image();
+    await new Promise(r => { img.onload = r; img.src = dataUrl; });
+    const scale = 0.5;
+    tmpCanvas.width = img.width * scale;
+    tmpCanvas.height = img.height * scale;
+    tmpCtx.drawImage(img, 0, 0, tmpCanvas.width, tmpCanvas.height);
+    finalUrl = tmpCanvas.toDataURL('image/jpeg', 0.5);
+  }
   await photosCollection.doc(id).set({
-    src: dataUrl,
+    src: finalUrl,
     date: stamp,
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   });
-  return { id, src: dataUrl, date: stamp };
+  return { id, src: finalUrl, date: stamp };
 }
 
 async function loadAllPhotos() {
@@ -1112,7 +1125,7 @@ btnCapture.addEventListener('click', async () => {
   ctx.font = `bold ${Math.round(photoCanvas.width * 0.025)}px 'Noto Sans KR', sans-serif`;
   ctx.fillText('HBD 상민 🎂', photoCanvas.width - 20, photoCanvas.height - 50);
 
-  const dataUrl = photoCanvas.toDataURL('image/jpeg', 0.7);
+  const dataUrl = photoCanvas.toDataURL('image/jpeg', 0.5);
   showPreview(dataUrl);
 
   // Save to Firestore
@@ -1123,6 +1136,7 @@ btnCapture.addEventListener('click', async () => {
     renderGallery();
   } catch (e) {
     console.error('Firebase save error:', e);
+    alert('사진 저장 실패: ' + e.message);
     photos.unshift({ id: Date.now().toString(), src: dataUrl, date: stamp });
     renderGallery();
   } finally {
