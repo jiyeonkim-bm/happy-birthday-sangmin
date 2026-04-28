@@ -589,6 +589,47 @@
       margin-bottom: 8px;
     }
 
+    /* ── Video Page ── */
+    .video-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .video-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .video-header h2 {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--mint-700);
+      margin-bottom: 6px;
+    }
+
+    .video-header p {
+      font-size: 14px;
+      color: var(--gray-500);
+    }
+
+    .video-wrap {
+      width: 100%;
+      max-width: 640px;
+      aspect-ratio: 16 / 9;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-xl);
+      border: 3px solid var(--mint-200);
+      background: var(--gray-900);
+    }
+
+    .video-wrap iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
     /* ── Responsive ── */
     @media (max-width: 560px) {
       .nav-logo { font-size: 17px; }
@@ -617,6 +658,7 @@
     <button class="nav-tab active" data-page="countdown">카운트다운</button>
     <button class="nav-tab" data-page="rolling">롤링페이퍼</button>
     <button class="nav-tab" data-page="photo">사진</button>
+    <button class="nav-tab" data-page="video">찬조영상</button>
   </div>
 </nav>
 
@@ -658,6 +700,19 @@
     <div class="rolling-grid" id="rolling-grid"></div>
     <div class="rolling-refresh">
       <button class="btn btn-mint" onclick="renderRollingPaper()">다른 메시지 보기</button>
+    </div>
+  </section>
+
+  <!-- ═══════ Video Page ═══════ -->
+  <section id="page-video" class="page">
+    <div class="video-section">
+      <div class="video-header">
+        <h2>찬조영상</h2>
+        <p>상민님을 위한 특별한 영상</p>
+      </div>
+      <div class="video-wrap">
+        <div id="yt-player"></div>
+      </div>
     </div>
   </section>
 
@@ -716,6 +771,7 @@ tabs.forEach(tab => {
     document.getElementById(`page-${target}`).classList.add('active');
 
     if (target === 'photo') initCamera();
+    if (target === 'video') loadVideo();
   });
 });
 
@@ -1051,6 +1107,73 @@ btnDownload.addEventListener('click', () => {
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') previewPopup.classList.remove('show');
 });
+
+// ══════════════════════════════════════
+// YouTube Video (찬조영상)
+// ══════════════════════════════════════
+let ytPlayer = null;
+let ytReady = false;
+let videoRequested = false;
+let stopTimer = null;
+
+const YT_VIDEO_ID = 'tLNJNDUOq70';
+const YT_START = 6682;   // 1:51:22
+const YT_END = 6719;     // 1:51:59
+
+// Load YouTube IFrame API
+const ytScript = document.createElement('script');
+ytScript.src = 'https://www.youtube.com/iframe_api';
+document.head.appendChild(ytScript);
+
+window.onYouTubeIframeAPIReady = function() {
+  ytReady = true;
+  if (videoRequested) createPlayer();
+};
+
+function createPlayer() {
+  if (ytPlayer) {
+    ytPlayer.seekTo(YT_START);
+    ytPlayer.playVideo();
+    startStopTimer();
+    return;
+  }
+  ytPlayer = new YT.Player('yt-player', {
+    videoId: YT_VIDEO_ID,
+    playerVars: {
+      autoplay: 1,
+      start: YT_START,
+      rel: 0,
+      modestbranding: 1,
+    },
+    events: {
+      onReady: function(e) {
+        e.target.playVideo();
+        startStopTimer();
+      },
+      onStateChange: function(e) {
+        if (e.data === YT.PlayerState.PLAYING) {
+          startStopTimer();
+        }
+      }
+    }
+  });
+}
+
+function startStopTimer() {
+  if (stopTimer) clearInterval(stopTimer);
+  stopTimer = setInterval(function() {
+    if (ytPlayer && ytPlayer.getCurrentTime && ytPlayer.getCurrentTime() >= YT_END) {
+      ytPlayer.pauseVideo();
+      clearInterval(stopTimer);
+      stopTimer = null;
+    }
+  }, 300);
+}
+
+function loadVideo() {
+  videoRequested = true;
+  if (ytReady) createPlayer();
+}
 </script>
 
 </body>
