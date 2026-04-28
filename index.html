@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>상민님 생일 축하해요!</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --mint-50: #f0fdfa;
+      --mint-100: #ccfbf1;
+      --mint-200: #99f6e4;
+      --mint-300: #5eead4;
+      --mint-400: #2dd4bf;
+      --mint-500: #14b8a6;
+      --mint-600: #0d9488;
+      --mint-700: #0f766e;
+      --mint-800: #115e59;
+      --mint-900: #134e4a;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-500: #6b7280;
+      --gray-700: #374151;
+      --gray-900: #111827;
+      --white: #ffffff;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04);
+      --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.08), 0 8px 10px -6px rgba(0,0,0,0.04);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--mint-50);
+      color: var(--gray-900);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Navigation ── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: var(--white);
+      border-bottom: 1px solid var(--mint-100);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .nav-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      height: 60px;
+      padding: 0 20px;
+      gap: 6px;
+    }
+
+    .nav-logo {
+      font-weight: 900;
+      font-size: 20px;
+      color: var(--mint-600);
+      margin-right: auto;
+      letter-spacing: -0.5px;
+      white-space: nowrap;
+    }
+
+    .nav-tab {
+      position: relative;
+      background: none;
+      border: none;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--gray-500);
+      padding: 8px 16px;
+      border-radius: 100px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      white-space: nowrap;
+    }
+
+    .nav-tab:hover {
+      color: var(--mint-700);
+      background: var(--mint-50);
+    }
+
+    .nav-tab.active {
+      color: var(--white);
+      background: var(--mint-500);
+    }
+
+    /* ── Main Content ── */
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 80px 20px 40px;
+      min-height: 100vh;
+    }
+
+    .page {
+      display: none;
+      animation: fadeUp 0.4s ease;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Countdown Page ── */
+    .countdown-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 140px);
+      text-align: center;
+    }
+
+    .countdown-emoji {
+      font-size: 64px;
+      margin-bottom: 16px;
+      animation: bounce 2s ease infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    .countdown-title {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--mint-700);
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .countdown-subtitle {
+      font-size: 15px;
+      color: var(--gray-500);
+      margin-bottom: 48px;
+    }
+
+    .countdown-boxes {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 48px;
+    }
+
+    .countdown-box {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 24px 20px 18px;
+      min-width: 90px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--mint-100);
+    }
+
+    .countdown-box .number {
+      font-size: 42px;
+      font-weight: 900;
+      color: var(--mint-600);
+      line-height: 1;
+      letter-spacing: -2px;
+    }
+
+    .countdown-box .label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gray-500);
+      margin-top: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .countdown-dday {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--mint-500);
+      background: var(--mint-100);
+      padding: 10px 24px;
+      border-radius: 100px;
+    }
+
+    /* Birthday mode */
+    .birthday-mode .countdown-title {
+      font-size: 36px;
+      color: var(--mint-600);
+      animation: pulse 1.5s ease infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .birthday-msg {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--gray-700);
+      margin-top: 16px;
+      line-height: 1.6;
+    }
+
+    /* ── Canvas for confetti ── */
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* ── Rolling Paper Page ── */
+    .rolling-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .rolling-header h2 {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--mint-700);
+      margin-bottom: 6px;
+    }
+
+    .rolling-header p {
+      font-size: 14px;
+      color: var(--gray-500);
+    }
+
+    .rolling-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 14px;
+    }
+
+    .rolling-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 24px 20px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--mint-100);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .rolling-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .rolling-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+    }
+
+    .rolling-card.color-1::before { background: var(--mint-400); }
+    .rolling-card.color-2::before { background: #fb923c; }
+    .rolling-card.color-3::before { background: #f472b6; }
+    .rolling-card.color-4::before { background: #a78bfa; }
+    .rolling-card.color-5::before { background: #60a5fa; }
+    .rolling-card.color-6::before { background: #facc15; }
+
+    .rolling-card .card-emoji {
+      font-size: 28px;
+      margin-bottom: 12px;
+    }
+
+    .rolling-card .card-msg {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--gray-700);
+      word-break: keep-all;
+    }
+
+    .rolling-card .card-from {
+      margin-top: 14px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--mint-600);
+    }
+
+    .rolling-refresh {
+      display: flex;
+      justify-content: center;
+      margin-top: 28px;
+    }
+
+    .btn {
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      border-radius: 100px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-mint {
+      background: var(--mint-500);
+      color: var(--white);
+      padding: 12px 28px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-mint:hover {
+      background: var(--mint-600);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .btn-outline {
+      background: var(--white);
+      color: var(--mint-600);
+      padding: 10px 24px;
+      border: 2px solid var(--mint-200);
+    }
+
+    .btn-outline:hover {
+      background: var(--mint-50);
+      border-color: var(--mint-400);
+    }
+
+    /* ── Photo Page ── */
+    .photo-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .photo-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .photo-header h2 {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--mint-700);
+      margin-bottom: 6px;
+    }
+
+    .photo-header p {
+      font-size: 14px;
+      color: var(--gray-500);
+    }
+
+    .camera-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--gray-900);
+      box-shadow: var(--shadow-xl);
+      border: 3px solid var(--mint-200);
+    }
+
+    .camera-wrap video,
+    .camera-wrap canvas {
+      width: 100%;
+      display: block;
+      border-radius: var(--radius);
+    }
+
+    #photo-canvas {
+      display: none;
+    }
+
+    .camera-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.4));
+    }
+
+    .btn-shutter {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--white);
+      border: 4px solid var(--mint-400);
+      cursor: pointer;
+      position: relative;
+      transition: all 0.15s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .btn-shutter::after {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border-radius: 50%;
+      background: var(--mint-400);
+      transition: background 0.15s ease;
+    }
+
+    .btn-shutter:hover {
+      transform: scale(1.08);
+    }
+
+    .btn-shutter:active::after {
+      background: var(--mint-600);
+    }
+
+    .flash-effect {
+      position: fixed;
+      inset: 0;
+      background: white;
+      z-index: 1000;
+      animation: flash 0.3s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes flash {
+      0% { opacity: 0.8; }
+      100% { opacity: 0; }
+    }
+
+    .camera-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .photo-preview-popup {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .photo-preview-popup.show {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .preview-inner {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 20px;
+      max-width: 520px;
+      width: 100%;
+      box-shadow: var(--shadow-xl);
+      text-align: center;
+    }
+
+    .preview-inner img {
+      width: 100%;
+      border-radius: var(--radius-sm);
+      margin-bottom: 16px;
+    }
+
+    .preview-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    /* Gallery */
+    .gallery-divider {
+      margin-top: 40px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .gallery-divider::before,
+    .gallery-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--mint-200);
+    }
+
+    .gallery-divider span {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--mint-600);
+      white-space: nowrap;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .gallery-item {
+      aspect-ratio: 1;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid var(--mint-100);
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .gallery-item:hover {
+      border-color: var(--mint-400);
+      transform: scale(1.03);
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .gallery-item .delete-btn {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.5);
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .gallery-item:hover .delete-btn {
+      display: flex;
+    }
+
+    .gallery-empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--gray-500);
+      font-size: 14px;
+    }
+
+    .gallery-empty span {
+      display: block;
+      font-size: 36px;
+      margin-bottom: 8px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 560px) {
+      .nav-logo { font-size: 17px; }
+      .nav-tab { font-size: 13px; padding: 7px 12px; }
+      .countdown-boxes { gap: 8px; }
+      .countdown-box { min-width: 72px; padding: 18px 14px 14px; }
+      .countdown-box .number { font-size: 32px; }
+      .rolling-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .gallery-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    }
+
+    @media (max-width: 380px) {
+      .rolling-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Confetti Canvas -->
+<canvas id="confetti-canvas"></canvas>
+
+<!-- Navigation -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">HBD 상민</div>
+    <button class="nav-tab active" data-page="countdown">카운트다운</button>
+    <button class="nav-tab" data-page="rolling">롤링페이퍼</button>
+    <button class="nav-tab" data-page="photo">사진</button>
+  </div>
+</nav>
+
+<!-- ═══════ Countdown Page ═══════ -->
+<main>
+  <section id="page-countdown" class="page active">
+    <div class="countdown-wrap" id="countdown-area">
+      <div class="countdown-emoji">🎂</div>
+      <h1 class="countdown-title">상민님의 생일까지</h1>
+      <p class="countdown-subtitle">2026년 5월 3일</p>
+      <div class="countdown-boxes">
+        <div class="countdown-box">
+          <div class="number" id="cd-days">--</div>
+          <div class="label">Days</div>
+        </div>
+        <div class="countdown-box">
+          <div class="number" id="cd-hours">--</div>
+          <div class="label">Hours</div>
+        </div>
+        <div class="countdown-box">
+          <div class="number" id="cd-mins">--</div>
+          <div class="label">Min</div>
+        </div>
+        <div class="countdown-box">
+          <div class="number" id="cd-secs">--</div>
+          <div class="label">Sec</div>
+        </div>
+      </div>
+      <div class="countdown-dday" id="cd-dday"></div>
+    </div>
+  </section>
+
+  <!-- ═══════ Rolling Paper Page ═══════ -->
+  <section id="page-rolling" class="page">
+    <div class="rolling-header">
+      <h2>상민님에게 보내는 롤링페이퍼</h2>
+      <p>마음을 담아 한 장씩 전해요</p>
+    </div>
+    <div class="rolling-grid" id="rolling-grid"></div>
+    <div class="rolling-refresh">
+      <button class="btn btn-mint" onclick="renderRollingPaper()">다른 메시지 보기</button>
+    </div>
+  </section>
+
+  <!-- ═══════ Photo Page ═══════ -->
+  <section id="page-photo" class="page">
+    <div class="photo-section">
+      <div class="photo-header">
+        <h2>생일 포토부스</h2>
+        <p>함께 찍고 추억을 남겨요</p>
+      </div>
+
+      <div class="camera-wrap">
+        <video id="camera-video" autoplay playsinline muted></video>
+        <canvas id="photo-canvas"></canvas>
+        <div class="camera-overlay">
+          <button class="btn-shutter" id="btn-capture" title="촬영"></button>
+        </div>
+      </div>
+
+      <div class="camera-actions">
+        <button class="btn btn-outline" id="btn-camera-toggle">카메라 켜기</button>
+      </div>
+
+      <div class="gallery-divider"><span>갤러리</span></div>
+      <div class="gallery-grid" id="gallery-grid">
+        <div class="gallery-empty"><span>📷</span>아직 찍은 사진이 없어요</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Photo Preview Popup -->
+<div class="photo-preview-popup" id="photo-preview">
+  <div class="preview-inner">
+    <img id="preview-img" src="" alt="preview">
+    <div class="preview-actions">
+      <button class="btn btn-mint" id="btn-download">다운로드</button>
+      <button class="btn btn-outline" id="btn-close-preview">닫기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════
+// Navigation
+// ══════════════════════════════════════
+const tabs = document.querySelectorAll('.nav-tab');
+const pages = document.querySelectorAll('.page');
+
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    const target = tab.dataset.page;
+    tabs.forEach(t => t.classList.remove('active'));
+    pages.forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(`page-${target}`).classList.add('active');
+
+    if (target === 'photo') initCamera();
+  });
+});
+
+// ══════════════════════════════════════
+// Countdown
+// ══════════════════════════════════════
+const BIRTHDAY = new Date('2026-05-03T00:00:00');
+let isBirthday = false;
+
+function updateCountdown() {
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const bday = new Date(BIRTHDAY);
+
+  // Check if today IS the birthday (May 3, 2026 all day)
+  if (now.getFullYear() === 2026 && now.getMonth() === 4 && now.getDate() === 3) {
+    if (!isBirthday) {
+      isBirthday = true;
+      showBirthdayMode();
+    }
+    return;
+  }
+
+  const diff = bday - now;
+
+  if (diff <= 0) {
+    // Birthday has passed
+    document.getElementById('cd-days').textContent = '0';
+    document.getElementById('cd-hours').textContent = '0';
+    document.getElementById('cd-mins').textContent = '0';
+    document.getElementById('cd-secs').textContent = '0';
+    document.getElementById('cd-dday').textContent = '생일이 지났어요!';
+    return;
+  }
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+  document.getElementById('cd-days').textContent = days;
+  document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
+  document.getElementById('cd-mins').textContent = String(mins).padStart(2, '0');
+  document.getElementById('cd-secs').textContent = String(secs).padStart(2, '0');
+
+  const dday = Math.ceil((bday - today) / (1000 * 60 * 60 * 24));
+  document.getElementById('cd-dday').textContent = `D-${dday}`;
+}
+
+function showBirthdayMode() {
+  const area = document.getElementById('countdown-area');
+  area.classList.add('birthday-mode');
+  area.innerHTML = `
+    <div class="countdown-emoji" style="font-size:80px">🎉</div>
+    <h1 class="countdown-title">상민님 생일 축하해요!</h1>
+    <p class="birthday-msg">
+      오늘은 상민님의 특별한 날!<br>
+      행복한 하루 보내세요 🎂🎈
+    </p>
+    <div style="margin-top:32px">
+      <div class="countdown-dday" style="font-size:22px;background:var(--mint-500);color:white;">
+        🎊 D-DAY 🎊
+      </div>
+    </div>
+  `;
+  startConfetti();
+}
+
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+// ══════════════════════════════════════
+// Confetti (Canvas-based, no library)
+// ══════════════════════════════════════
+const confettiCanvas = document.getElementById('confetti-canvas');
+const ctx = confettiCanvas.getContext('2d');
+let confettiPieces = [];
+let confettiRunning = false;
+
+function resizeConfettiCanvas() {
+  confettiCanvas.width = window.innerWidth;
+  confettiCanvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeConfettiCanvas);
+resizeConfettiCanvas();
+
+const CONFETTI_COLORS = [
+  '#14b8a6', '#5eead4', '#f472b6', '#fb923c',
+  '#a78bfa', '#60a5fa', '#facc15', '#34d399',
+  '#f87171', '#c084fc'
+];
+
+function createConfettiPiece() {
+  return {
+    x: Math.random() * confettiCanvas.width,
+    y: Math.random() * -confettiCanvas.height,
+    w: Math.random() * 10 + 6,
+    h: Math.random() * 6 + 4,
+    color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+    rotation: Math.random() * 360,
+    rotSpeed: (Math.random() - 0.5) * 8,
+    speedY: Math.random() * 2 + 1.5,
+    speedX: (Math.random() - 0.5) * 2,
+    wobble: Math.random() * Math.PI * 2,
+    wobbleSpeed: Math.random() * 0.05 + 0.02,
+  };
+}
+
+function animateConfetti() {
+  if (!confettiRunning) return;
+  ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+
+  // Add new pieces
+  if (confettiPieces.length < 150) {
+    for (let i = 0; i < 3; i++) confettiPieces.push(createConfettiPiece());
+  }
+
+  confettiPieces.forEach((p, i) => {
+    p.y += p.speedY;
+    p.x += p.speedX + Math.sin(p.wobble) * 0.5;
+    p.wobble += p.wobbleSpeed;
+    p.rotation += p.rotSpeed;
+
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate((p.rotation * Math.PI) / 180);
+    ctx.fillStyle = p.color;
+    ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+    ctx.restore();
+
+    if (p.y > confettiCanvas.height + 20) {
+      confettiPieces[i] = createConfettiPiece();
+    }
+  });
+
+  requestAnimationFrame(animateConfetti);
+}
+
+function startConfetti() {
+  confettiRunning = true;
+  confettiPieces = [];
+  animateConfetti();
+}
+
+// ══════════════════════════════════════
+// Rolling Paper
+// ══════════════════════════════════════
+const rollingMessages = [
+  { emoji: '🎂', msg: '상민님! 생일 축하해요! 올해도 건강하고 행복한 한 해가 되길 바라요.', from: '친구 A' },
+  { emoji: '🎈', msg: '생일 축하합니다~ 항상 웃는 모습만 보고 싶어요. 올해 소원 다 이루세요!', from: '친구 B' },
+  { emoji: '🌟', msg: '상민아, 네가 있어서 우리 모임이 항상 즐거워! 생일 축하해!', from: '친구 C' },
+  { emoji: '💐', msg: '상민님 생일을 진심으로 축하드려요! 늘 좋은 일만 가득하시길 바랍니다.', from: '동료 D' },
+  { emoji: '🎁', msg: '해피버스데이!! 올해도 멋진 일들만 가득하길! 맛있는 거 많이 먹어~', from: '친구 E' },
+  { emoji: '🥳', msg: '생일 축하해요 상민님! 함께할 수 있어서 행복합니다. 늘 응원해요!', from: '친구 F' },
+  { emoji: '🍰', msg: '상민아 생축!! 케이크 먹으면서 행복한 시간 보내! 사랑해~', from: '친구 G' },
+  { emoji: '✨', msg: '상민님의 특별한 날을 축하합니다! 반짝반짝 빛나는 한 해가 되세요!', from: '동료 H' },
+  { emoji: '🎵', msg: '해피버스데이 투 유~ 상민님! 올해는 더 행복한 일만 가득하길!', from: '친구 I' },
+  { emoji: '🌈', msg: '생일 축하해 상민아! 무지개처럼 다채로운 한 해가 되길 바라!', from: '친구 J' },
+  { emoji: '💫', msg: '상민님 생일 진심으로 축하해요. 하고 싶은 거 다 하는 한 해 되세요!', from: '동료 K' },
+  { emoji: '🎊', msg: '우리 상민이 생일이라니! 시간 참 빠르다~ 축하하고 사랑해!', from: '친구 L' },
+  { emoji: '🫶', msg: '상민님! 태어나줘서 고마워요. 덕분에 제 인생이 더 즐거워졌어요!', from: '친구 M' },
+  { emoji: '🧁', msg: '생일 축하해요~ 오늘 하루만큼은 세상에서 제일 행복한 사람이 되세요!', from: '친구 N' },
+  { emoji: '🎤', msg: '상민아 생일 축하한다!! 노래방 가서 축하 노래 불러줄게~ 🎶', from: '친구 O' },
+  { emoji: '🏖️', msg: '생일 축하!! 올해는 같이 여행 가자~ 좋은 추억 만들자!', from: '친구 P' },
+  { emoji: '💪', msg: '상민님! 생일 축하드립니다. 올해도 파이팅이에요! 항상 건강하세요!', from: '동료 Q' },
+  { emoji: '🌸', msg: '봄에 태어난 상민님~ 꽃처럼 예쁜 하루 보내세요! 생일 축하해요!', from: '친구 R' },
+  { emoji: '🍕', msg: '상민아 생일 축하해! 오늘은 맛있는 거 잔뜩 먹자! 내가 쏠게~', from: '친구 S' },
+  { emoji: '🎯', msg: '생일 축하합니다! 올해 목표 다 이루시고, 늘 행복하세요 상민님!', from: '동료 T' },
+  { emoji: '☀️', msg: '상민님처럼 따뜻한 사람의 생일! 오늘 하루 햇살처럼 빛나세요~', from: '친구 U' },
+  { emoji: '🎪', msg: '생축!! 상민아 올해도 재밌는 일 많이 하자! 너랑 있으면 항상 신나~', from: '친구 V' },
+  { emoji: '📸', msg: '상민님 생일 축하해요! 좋은 순간 많이 남기고, 행복한 한 해 되세요!', from: '친구 W' },
+  { emoji: '🫧', msg: '상민아~ 생일 축하해! 우리 우정 영원하자! 넌 나의 소중한 친구야.', from: '친구 X' },
+  { emoji: '🧸', msg: '상민님 태어난 날을 축하합니다! 올해도 사랑 많이 받으세요~', from: '동료 Y' },
+  { emoji: '🌻', msg: '생일 축하해요! 해바라기처럼 밝은 상민님, 올해도 빛나세요!', from: '친구 Z' },
+  { emoji: '🍀', msg: '상민아, 생일 축하해! 행운이 항상 따르길! 네 곁에 있어서 행복해.', from: '친구 AA' },
+  { emoji: '🎠', msg: '해피 버스데이 상민님! 동심 잃지 않는 그 모습 그대로 있어주세요~', from: '친구 BB' },
+  { emoji: '💌', msg: '상민님에게 보내는 생일 편지! 늘 감사하고, 오래오래 함께해요!', from: '동료 CC' },
+  { emoji: '🦋', msg: '상민아 생일 축하!! 나비처럼 자유롭고 아름다운 한 해 보내~!', from: '친구 DD' },
+];
+
+const colorClasses = ['color-1','color-2','color-3','color-4','color-5','color-6'];
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function renderRollingPaper() {
+  const grid = document.getElementById('rolling-grid');
+  const shuffled = shuffle(rollingMessages).slice(0, 12);
+  grid.innerHTML = shuffled.map((m, i) => `
+    <div class="rolling-card ${colorClasses[i % colorClasses.length]}">
+      <div class="card-emoji">${m.emoji}</div>
+      <div class="card-msg">${m.msg}</div>
+      <div class="card-from">- ${m.from}</div>
+    </div>
+  `).join('');
+}
+
+renderRollingPaper();
+
+// ══════════════════════════════════════
+// Photo Booth
+// ══════════════════════════════════════
+const video = document.getElementById('camera-video');
+const photoCanvas = document.getElementById('photo-canvas');
+const btnCapture = document.getElementById('btn-capture');
+const btnToggle = document.getElementById('btn-camera-toggle');
+const galleryGrid = document.getElementById('gallery-grid');
+const previewPopup = document.getElementById('photo-preview');
+const previewImg = document.getElementById('preview-img');
+const btnDownload = document.getElementById('btn-download');
+const btnClosePreview = document.getElementById('btn-close-preview');
+
+let cameraStream = null;
+let photos = [];
+
+async function initCamera() {
+  if (cameraStream) return;
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+      audio: false
+    });
+    video.srcObject = cameraStream;
+    btnToggle.textContent = '카메라 끄기';
+  } catch (err) {
+    console.error('Camera error:', err);
+    btnToggle.textContent = '카메라 켜기';
+  }
+}
+
+function stopCamera() {
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(t => t.stop());
+    cameraStream = null;
+    video.srcObject = null;
+    btnToggle.textContent = '카메라 켜기';
+  }
+}
+
+btnToggle.addEventListener('click', () => {
+  if (cameraStream) stopCamera();
+  else initCamera();
+});
+
+btnCapture.addEventListener('click', () => {
+  if (!cameraStream) {
+    initCamera();
+    return;
+  }
+  // Flash
+  const flash = document.createElement('div');
+  flash.className = 'flash-effect';
+  document.body.appendChild(flash);
+  setTimeout(() => flash.remove(), 400);
+
+  // Capture
+  const ctx = photoCanvas.getContext('2d');
+  photoCanvas.width = video.videoWidth;
+  photoCanvas.height = video.videoHeight;
+  ctx.drawImage(video, 0, 0);
+
+  // Add date stamp
+  const now = new Date();
+  const stamp = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  ctx.font = `${Math.round(photoCanvas.width * 0.03)}px 'Noto Sans KR', sans-serif`;
+  ctx.textAlign = 'right';
+  ctx.fillText(stamp, photoCanvas.width - 20, photoCanvas.height - 20);
+
+  // Birthday watermark
+  ctx.fillStyle = 'rgba(20, 184, 166, 0.3)';
+  ctx.font = `bold ${Math.round(photoCanvas.width * 0.025)}px 'Noto Sans KR', sans-serif`;
+  ctx.fillText('HBD 상민 🎂', photoCanvas.width - 20, photoCanvas.height - 50);
+
+  const dataUrl = photoCanvas.toDataURL('image/png');
+  photos.unshift({ src: dataUrl, date: stamp });
+  renderGallery();
+  showPreview(dataUrl);
+});
+
+function renderGallery() {
+  if (photos.length === 0) {
+    galleryGrid.innerHTML = '<div class="gallery-empty"><span>📷</span>아직 찍은 사진이 없어요</div>';
+    return;
+  }
+  galleryGrid.innerHTML = photos.map((p, i) => `
+    <div class="gallery-item" onclick="showPreview('${p.src.substring(0, 50)}', ${i})">
+      <img src="${p.src}" alt="photo ${i+1}">
+      <button class="delete-btn" onclick="event.stopPropagation(); deletePhoto(${i})">×</button>
+    </div>
+  `).join('');
+
+  // Re-attach click handlers properly (inline src is too long)
+  document.querySelectorAll('.gallery-item').forEach((el, i) => {
+    el.onclick = (e) => {
+      if (e.target.classList.contains('delete-btn')) return;
+      showPreview(photos[i].src);
+    };
+  });
+}
+
+function deletePhoto(index) {
+  photos.splice(index, 1);
+  renderGallery();
+}
+
+function showPreview(src) {
+  previewImg.src = src;
+  previewPopup.classList.add('show');
+}
+
+btnClosePreview.addEventListener('click', () => {
+  previewPopup.classList.remove('show');
+});
+
+previewPopup.addEventListener('click', (e) => {
+  if (e.target === previewPopup) previewPopup.classList.remove('show');
+});
+
+btnDownload.addEventListener('click', () => {
+  const link = document.createElement('a');
+  link.download = `HBD_상민_${Date.now()}.png`;
+  link.href = previewImg.src;
+  link.click();
+});
+
+// Keyboard: ESC to close preview
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') previewPopup.classList.remove('show');
+});
+</script>
+
+</body>
+</html>
