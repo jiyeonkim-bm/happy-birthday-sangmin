@@ -761,6 +761,9 @@
   </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-storage-compat.js"></script>
 <script>
 // ══════════════════════════════════════
 // Navigation
@@ -983,60 +986,62 @@ function renderRollingPaper() {
 renderRollingPaper();
 
 // ══════════════════════════════════════
-// IndexedDB (Photo Storage)
+// Firebase Setup
 // ══════════════════════════════════════
-const DB_NAME = 'hbd-sangmin-photos';
-const DB_VERSION = 2;
-const STORE_NAME = 'photos';
-let _db = null;
+const firebaseConfig = {
+  apiKey: "AIzaSyCUJlpEcG7Eo8V4ONJvOG2FwVlwoahnxcg",
+  authDomain: "hbd-sangmin.firebaseapp.com",
+  projectId: "hbd-sangmin",
+  storageBucket: "hbd-sangmin.firebasestorage.app",
+  messagingSenderId: "991634938597",
+  appId: "1:991634938597:web:1249191a134625d788520c"
+};
 
-function openDB() {
-  if (_db) return Promise.resolve(_db);
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, DB_VERSION);
-    req.onupgradeneeded = (e) => {
-      const db = e.target.result;
-      if (db.objectStoreNames.contains(STORE_NAME)) {
-        db.deleteObjectStore(STORE_NAME);
-      }
-      db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-    };
-    req.onsuccess = () => { _db = req.result; resolve(_db); };
-    req.onerror = () => reject(req.error);
-  });
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const storage = firebase.storage();
+const photosCollection = db.collection('photos');
+
+// ══════════════════════════════════════
+// Firebase Photo Functions
+// ══════════════════════════════════════
+function canvasToBlob(canvas) {
+  return new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.85));
 }
 
-async function savePhotoDB(photo) {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, 'readwrite');
-    const store = tx.objectStore(STORE_NAME);
-    const req = store.put(photo);
-    tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error);
+async function savePhotoFirebase(canvas, stamp) {
+  const id = Date.now().toString();
+  const blob = await canvasToBlob(canvas);
+
+  // Upload image to Firebase Storage
+  const ref = storage.ref(`photos/${id}.jpg`);
+  await ref.put(blob);
+  const url = await ref.getDownloadURL();
+
+  // Save metadata to Firestore
+  await photosCollection.doc(id).set({
+    url: url,
+    date: stamp,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
   });
+
+  return { id, src: url, date: stamp };
 }
 
 async function loadAllPhotos() {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, 'readonly');
-    const store = tx.objectStore(STORE_NAME);
-    const req = store.getAll();
-    req.onsuccess = () => resolve(req.result.sort((a, b) => b.id - a.id));
-    req.onerror = () => reject(req.error);
-  });
+  const snapshot = await photosCollection.orderBy('createdAt', 'desc').get();
+  return snapshot.docs.map(doc => ({
+    id: doc.id,
+    src: doc.data().url,
+    date: doc.data().date
+  }));
 }
 
-async function deletePhotoDB(id) {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, 'readwrite');
-    const store = tx.objectStore(STORE_NAME);
-    store.delete(id);
-    tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error);
-  });
+async function deletePhotoFirebase(id) {
+  // Delete from Storage
+  try { await storage.ref(`photos/${id}.jpg`).delete(); } catch (e) { /* ignore if file missing */ }
+  // Delete from Firestore
+  await photosCollection.doc(id).delete();
 }
 
 // ══════════════════════════════════════
@@ -1125,21 +1130,23 @@ btnCapture.addEventListener('click', async () => {
   ctx.font = `bold ${Math.round(photoCanvas.width * 0.025)}px 'Noto Sans KR', sans-serif`;
   ctx.fillText('HBD 상민 🎂', photoCanvas.width - 20, photoCanvas.height - 50);
 
+  // Show preview immediately with local data
   const dataUrl = photoCanvas.toDataURL('image/jpeg', 0.85);
-  const photo = { id: Date.now(), src: dataUrl, date: stamp };
+  showPreview(dataUrl);
 
-  // Save to IndexedDB, then update gallery
+  // Upload to Firebase
   try {
-    await savePhotoDB(photo);
+    btnCapture.style.pointerEvents = 'none';
+    const photo = await savePhotoFirebase(photoCanvas, stamp);
     photos.unshift(photo);
     renderGallery();
-    showPreview(dataUrl);
   } catch (e) {
-    console.error('DB save error:', e);
-    // Still show even if DB fails
-    photos.unshift(photo);
+    console.error('Firebase save error:', e);
+    // Fallback: show local version
+    photos.unshift({ id: Date.now().toString(), src: dataUrl, date: stamp });
     renderGallery();
-    showPreview(dataUrl);
+  } finally {
+    btnCapture.style.pointerEvents = '';
   }
 });
 
@@ -1167,7 +1174,7 @@ function renderGallery() {
 async function deletePhoto(index) {
   const photo = photos[index];
   if (photo.id) {
-    try { await deletePhotoDB(photo.id); } catch (e) { console.error('DB delete error:', e); }
+    try { await deletePhotoFirebase(photo.id); } catch (e) { console.error('Firebase delete error:', e); }
   }
   photos.splice(index, 1);
   renderGallery();
