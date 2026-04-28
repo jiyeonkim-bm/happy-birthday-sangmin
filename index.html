@@ -983,6 +983,60 @@ function renderRollingPaper() {
 renderRollingPaper();
 
 // ══════════════════════════════════════
+// IndexedDB (Photo Storage)
+// ══════════════════════════════════════
+const DB_NAME = 'hbd-sangmin-photos';
+const DB_VERSION = 1;
+const STORE_NAME = 'photos';
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+      }
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function savePhotoDB(photo) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    const req = store.add(photo);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function loadAllPhotos() {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readonly');
+    const store = tx.objectStore(STORE_NAME);
+    const req = store.getAll();
+    req.onsuccess = () => resolve(req.result.reverse());
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function deletePhotoDB(id) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    const req = store.delete(id);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// ══════════════════════════════════════
 // Photo Booth
 // ══════════════════════════════════════
 const video = document.getElementById('camera-video');
@@ -997,6 +1051,14 @@ const btnClosePreview = document.getElementById('btn-close-preview');
 
 let cameraStream = null;
 let photos = [];
+
+// Load saved photos on startup
+(async function() {
+  try {
+    photos = await loadAllPhotos();
+    renderGallery();
+  } catch (e) { console.error('DB load error:', e); }
+})();
 
 async function initCamera() {
   if (cameraStream) return;
@@ -1027,7 +1089,7 @@ btnToggle.addEventListener('click', () => {
   else initCamera();
 });
 
-btnCapture.addEventListener('click', () => {
+btnCapture.addEventListener('click', async () => {
   if (!cameraStream) {
     initCamera();
     return;
@@ -1038,18 +1100,18 @@ btnCapture.addEventListener('click', () => {
   document.body.appendChild(flash);
   setTimeout(() => flash.remove(), 400);
 
-  // Capture
+  // Capture (mirrored like selfie)
   const ctx = photoCanvas.getContext('2d');
   photoCanvas.width = video.videoWidth;
   photoCanvas.height = video.videoHeight;
   ctx.translate(photoCanvas.width, 0);
   ctx.scale(-1, 1);
   ctx.drawImage(video, 0, 0);
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-  // Add date stamp
+  // Date stamp (mirrored context, so flip text position)
   const now = new Date();
   const stamp = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.fillStyle = 'rgba(255,255,255,0.7)';
   ctx.font = `${Math.round(photoCanvas.width * 0.03)}px 'Noto Sans KR', sans-serif`;
   ctx.textAlign = 'right';
@@ -1061,7 +1123,15 @@ btnCapture.addEventListener('click', () => {
   ctx.fillText('HBD 상민 🎂', photoCanvas.width - 20, photoCanvas.height - 50);
 
   const dataUrl = photoCanvas.toDataURL('image/png');
-  photos.unshift({ src: dataUrl, date: stamp });
+  const photo = { src: dataUrl, date: stamp };
+
+  // Save to IndexedDB
+  try {
+    const id = await savePhotoDB(photo);
+    photo.id = id;
+  } catch (e) { console.error('DB save error:', e); }
+
+  photos.unshift(photo);
   renderGallery();
   showPreview(dataUrl);
 });
@@ -1072,22 +1142,26 @@ function renderGallery() {
     return;
   }
   galleryGrid.innerHTML = photos.map((p, i) => `
-    <div class="gallery-item" onclick="showPreview('${p.src.substring(0, 50)}', ${i})">
+    <div class="gallery-item">
       <img src="${p.src}" alt="photo ${i+1}">
-      <button class="delete-btn" onclick="event.stopPropagation(); deletePhoto(${i})">×</button>
+      <button class="delete-btn">×</button>
     </div>
   `).join('');
 
-  // Re-attach click handlers properly (inline src is too long)
   document.querySelectorAll('.gallery-item').forEach((el, i) => {
-    el.onclick = (e) => {
-      if (e.target.classList.contains('delete-btn')) return;
-      showPreview(photos[i].src);
-    };
+    el.querySelector('img').addEventListener('click', () => showPreview(photos[i].src));
+    el.querySelector('.delete-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      deletePhoto(i);
+    });
   });
 }
 
-function deletePhoto(index) {
+async function deletePhoto(index) {
+  const photo = photos[index];
+  if (photo.id) {
+    try { await deletePhotoDB(photo.id); } catch (e) { console.error('DB delete error:', e); }
+  }
   photos.splice(index, 1);
   renderGallery();
 }
