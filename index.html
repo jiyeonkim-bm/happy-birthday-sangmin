@@ -763,7 +763,6 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-storage-compat.js"></script>
 <script>
 // ══════════════════════════════════════
 // Navigation
@@ -999,48 +998,31 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-const storage = firebase.storage();
 const photosCollection = db.collection('photos');
 
 // ══════════════════════════════════════
-// Firebase Photo Functions
+// Firebase Photo Functions (Firestore only)
 // ══════════════════════════════════════
-function canvasToBlob(canvas) {
-  return new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.85));
-}
-
-async function savePhotoFirebase(canvas, stamp) {
+async function savePhotoFirebase(dataUrl, stamp) {
   const id = Date.now().toString();
-  const blob = await canvasToBlob(canvas);
-
-  // Upload image to Firebase Storage
-  const ref = storage.ref(`photos/${id}.jpg`);
-  await ref.put(blob);
-  const url = await ref.getDownloadURL();
-
-  // Save metadata to Firestore
   await photosCollection.doc(id).set({
-    url: url,
+    src: dataUrl,
     date: stamp,
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   });
-
-  return { id, src: url, date: stamp };
+  return { id, src: dataUrl, date: stamp };
 }
 
 async function loadAllPhotos() {
   const snapshot = await photosCollection.orderBy('createdAt', 'desc').get();
   return snapshot.docs.map(doc => ({
     id: doc.id,
-    src: doc.data().url,
+    src: doc.data().src,
     date: doc.data().date
   }));
 }
 
 async function deletePhotoFirebase(id) {
-  // Delete from Storage
-  try { await storage.ref(`photos/${id}.jpg`).delete(); } catch (e) { /* ignore if file missing */ }
-  // Delete from Firestore
   await photosCollection.doc(id).delete();
 }
 
@@ -1130,19 +1112,17 @@ btnCapture.addEventListener('click', async () => {
   ctx.font = `bold ${Math.round(photoCanvas.width * 0.025)}px 'Noto Sans KR', sans-serif`;
   ctx.fillText('HBD 상민 🎂', photoCanvas.width - 20, photoCanvas.height - 50);
 
-  // Show preview immediately with local data
-  const dataUrl = photoCanvas.toDataURL('image/jpeg', 0.85);
+  const dataUrl = photoCanvas.toDataURL('image/jpeg', 0.7);
   showPreview(dataUrl);
 
-  // Upload to Firebase
+  // Save to Firestore
   try {
     btnCapture.style.pointerEvents = 'none';
-    const photo = await savePhotoFirebase(photoCanvas, stamp);
+    const photo = await savePhotoFirebase(dataUrl, stamp);
     photos.unshift(photo);
     renderGallery();
   } catch (e) {
     console.error('Firebase save error:', e);
-    // Fallback: show local version
     photos.unshift({ id: Date.now().toString(), src: dataUrl, date: stamp });
     renderGallery();
   } finally {
