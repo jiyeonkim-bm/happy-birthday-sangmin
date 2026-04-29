@@ -617,3 +617,154 @@ function loadVideo() {
   videoRequested = true;
   if (ytReady) createPlayer();
 }
+
+// ══════════════════════════════════════
+// Lucky Roulette
+// ══════════════════════════════════════
+const ROULETTE_PEOPLE = [
+  '권혁민', '김보라', '김종섭', '맹승우', '문승희',
+  '박정현', '서영미', '우미라', '김지연'
+];
+
+const ROULETTE_MISSIONS = [
+  { emoji: '☕', text: '상민님에게 커피 쏘기' },
+  { emoji: '🍽️', text: '상민님 점심 사주기' },
+  { emoji: '🎤', text: '상민님 앞에서 생일 축하 노래 불러주기' },
+  { emoji: '💌', text: '상민님에게 손편지 써서 전달하기' },
+  { emoji: '🍰', text: '상민님에게 케이크 or 디저트 선물하기' },
+  { emoji: '📸', text: '상민님과 인생네컷 찍으러 가기' },
+  { emoji: '🫶', text: '오늘 하루 상민님 칭찬 10번 하기' },
+  { emoji: '🧹', text: '상민님 자리 청소 + 간식 세팅해주기' },
+  { emoji: '🎁', text: '상민님 위시리스트에서 선물 하나 사주기' },
+  { emoji: '🏃', text: '상민님이 시키는 심부름 1회 무조건 수행' },
+  { emoji: '📢', text: '팀 단톡방에 상민님 자랑 3줄 올리기' },
+  { emoji: '🥤', text: '상민님에게 오늘 음료 배달하기' },
+  { emoji: '🤝', text: '상민님과 퇴근 후 산책 30분 함께하기' },
+  { emoji: '🎬', text: '상민님이 보고 싶은 영화 같이 보러 가기' },
+  { emoji: '💪', text: '상민님 업무 하나 대신 해주기' },
+  { emoji: '🍜', text: '상민님이 먹고 싶은 거 배달 시켜주기' },
+  { emoji: '✏️', text: '상민님 캐리커쳐 그려서 선물하기' },
+  { emoji: '🎵', text: '상민님 전용 플레이리스트 만들어 공유하기' },
+];
+
+const ROULETTE_COLORS = [
+  '#99f6e4', '#fde68a', '#f9a8d4', '#c4b5fd',
+  '#93c5fd', '#86efac', '#fdba74', '#fca5a5', '#a5b4fc'
+];
+
+const rouletteCanvas = document.getElementById('roulette-canvas');
+const rCtx = rouletteCanvas.getContext('2d');
+let rouletteAngle = 0;
+let rouletteSpinning = false;
+
+function drawRoulette(angle) {
+  const size = rouletteCanvas.width;
+  const cx = size / 2;
+  const cy = size / 2;
+  const r = size / 2 - 4;
+  const count = ROULETTE_PEOPLE.length;
+  const arc = (Math.PI * 2) / count;
+
+  rCtx.clearRect(0, 0, size, size);
+
+  ROULETTE_PEOPLE.forEach((name, i) => {
+    const startAngle = angle + arc * i;
+    const endAngle = startAngle + arc;
+
+    // slice
+    rCtx.beginPath();
+    rCtx.moveTo(cx, cy);
+    rCtx.arc(cx, cy, r, startAngle, endAngle);
+    rCtx.closePath();
+    rCtx.fillStyle = ROULETTE_COLORS[i % ROULETTE_COLORS.length];
+    rCtx.fill();
+    rCtx.strokeStyle = 'rgba(255,255,255,0.6)';
+    rCtx.lineWidth = 2;
+    rCtx.stroke();
+
+    // text
+    rCtx.save();
+    rCtx.translate(cx, cy);
+    rCtx.rotate(startAngle + arc / 2);
+    rCtx.fillStyle = '#374151';
+    rCtx.font = 'bold 14px "Noto Sans KR", sans-serif';
+    rCtx.textAlign = 'center';
+    rCtx.textBaseline = 'middle';
+    rCtx.fillText(name, r * 0.62, 0);
+    rCtx.restore();
+  });
+
+  // center circle
+  rCtx.beginPath();
+  rCtx.arc(cx, cy, 22, 0, Math.PI * 2);
+  rCtx.fillStyle = '#ffffff';
+  rCtx.fill();
+  rCtx.strokeStyle = var_mint_400();
+  rCtx.lineWidth = 3;
+  rCtx.stroke();
+
+  rCtx.fillStyle = '#0d9488';
+  rCtx.font = 'bold 11px "Noto Sans KR", sans-serif';
+  rCtx.textAlign = 'center';
+  rCtx.textBaseline = 'middle';
+  rCtx.fillText('GO!', cx, cy);
+}
+
+function var_mint_400() { return '#2dd4bf'; }
+
+function spinRoulette() {
+  if (rouletteSpinning) return;
+  rouletteSpinning = true;
+  document.getElementById('btn-spin').disabled = true;
+  document.getElementById('btn-spin').textContent = '돌아가는 중...';
+  document.getElementById('roulette-result').innerHTML = '';
+
+  const count = ROULETTE_PEOPLE.length;
+  const arc = (Math.PI * 2) / count;
+  const extraSpins = Math.PI * 2 * (5 + Math.random() * 3); // 5~8 full spins
+  const targetIndex = Math.floor(Math.random() * count);
+  // pointer is at top (270deg = -PI/2), we need the target slice center to land there
+  const targetAngle = -(-Math.PI / 2 - arc * targetIndex - arc / 2) + extraSpins;
+
+  const startAngle = rouletteAngle;
+  const totalRotation = targetAngle - startAngle;
+  const duration = 4000;
+  const startTime = performance.now();
+
+  function animate(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    // ease-out cubic
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const currentAngle = startAngle + totalRotation * eased;
+
+    drawRoulette(currentAngle);
+
+    if (progress < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      rouletteAngle = currentAngle % (Math.PI * 2);
+      rouletteSpinning = false;
+      document.getElementById('btn-spin').disabled = false;
+      document.getElementById('btn-spin').textContent = '다시 돌리기!';
+      showRouletteResult(targetIndex);
+    }
+  }
+
+  requestAnimationFrame(animate);
+}
+
+function showRouletteResult(personIndex) {
+  const person = ROULETTE_PEOPLE[personIndex];
+  const mission = ROULETTE_MISSIONS[Math.floor(Math.random() * ROULETTE_MISSIONS.length)];
+  document.getElementById('roulette-result').innerHTML = `
+    <div class="roulette-result-card">
+      <div class="result-emoji">${mission.emoji}</div>
+      <div class="result-person">${person}</div>
+      <div class="result-mission">${mission.text}</div>
+    </div>
+  `;
+}
+
+document.getElementById('btn-spin').addEventListener('click', spinRoulette);
+drawRoulette(0);

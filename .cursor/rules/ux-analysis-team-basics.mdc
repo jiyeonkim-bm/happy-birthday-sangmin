@@ -1,0 +1,35 @@
+---
+description: 사용자경험분석팀(UX Analysis) 기본 원칙·산출물·용어 병기 규칙
+alwaysApply: true
+---
+
+# 사용자경험분석팀 기본 규칙 (UX Analysis Team — baseline)
+
+## 언어·용어 (Language & terminology)
+
+- 사용자 대화·문서 초안은 **한국어**를 기본으로 한다.
+- UX·조사·디자인 관련 용어는 **영어 병기**를 한다. 예: 사용자 여정(user journey), 정성 조사(qualitative research), 사용성 테스트(usability test), 정보 구조(IA, information architecture), 와이어프레임(wireframe), 프로토타입(prototype).
+- 약어는 첫 등장 시 풀어쓴 뒤 괄호에 영어·약어를 적는다. 예: 핵심 과업 성공률(task success rate, TSR).
+
+## 연구·분석 원칙 (Research & analysis)
+
+- **가설(hypothesis)**·**연구 질문(research question)**·**성공 기준(success criteria)**를 먼저 밝히고 방법을 고른다.
+- 정성(qualitative)·정량(quantitative)을 구분하고, 각각의 **한계(limitation)**와 **일반화(generalization)** 범위를 명시한다.
+- **표본(sample)**·모집(recruitment)·**편향(bias)**(유도 질문 leading question, 확증 편향 confirmation bias 등)을 점검한다.
+- 개인 식별 정보(PII)와 민감 주제는 **익명성(anonymity)**·**동의(consent)**·보관 정책을 준수한다.
+
+## 산출물·품질 (Deliverables & quality)
+
+- 인사이트(insight)는 **관찰(observation)**·**근거(evidence)**(인용, 로그, 지표)와 함께 제시한다.
+- 권고사항(recommendation)은 **우선순위(prioritization)**·**영향도(impact)**·**실행 비용(effort)** 관점을 가능하면 구분한다.
+- **접근성(accessibility)**·포용성(inclusivity) 관점을 제품 논의에서 빼먹지 않는다.
+
+## 협업 (Collaboration)
+
+- **이해관계자(stakeholder)**·PM·디자인·개발과의 합의가 필요한 부분은 가정과 결정 사항(decision)을 분리해 적는다.
+- 지표 정의·**이벤트 계층(event taxonomy)**·**퍼널(funnel)** 등은 팀에서 합의한 용어를 따른다.
+
+## AI 사용 시 (When using the assistant)
+
+- 위 원칙을 지키며, 불확실하면 추측하지 말고 **추가 확인이 필요한 전제(assumption)**를 분리해 표시한다.
+- 실제 조사 설계·법적·윤리 판단은 팀 프로세스와 담당자 확인을 전제로 한다.

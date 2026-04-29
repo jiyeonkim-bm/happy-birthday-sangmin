@@ -28,6 +28,7 @@
     <button class="nav-tab" data-page="rolling">롤링페이퍼</button>
     <button class="nav-tab" data-page="photo">사진</button>
     <button class="nav-tab" data-page="video">찬조영상</button>
+    <button class="nav-tab" data-page="roulette">럭키룰렛</button>
   </div>
 </nav>
 
@@ -83,6 +84,22 @@
       <div class="video-wrap">
         <div id="yt-player"></div>
       </div>
+    </div>
+  </section>
+
+  <!-- ═══════ Roulette Page ═══════ -->
+  <section id="page-roulette" class="page">
+    <div class="section-header">
+      <h2>럭키 룰렛</h2>
+      <p>상민님을 위한 미션! 누가 걸릴까?</p>
+    </div>
+    <div class="roulette-section">
+      <div class="roulette-container">
+        <div class="roulette-pointer">▼</div>
+        <canvas id="roulette-canvas" width="320" height="320"></canvas>
+      </div>
+      <button class="btn btn-mint roulette-spin-btn" id="btn-spin">돌려돌려!</button>
+      <div class="roulette-result" id="roulette-result"></div>
     </div>
   </section>
 
