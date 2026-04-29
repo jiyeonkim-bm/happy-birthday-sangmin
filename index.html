@@ -1024,6 +1024,7 @@
       <button class="btn btn-mint" onclick="renderRollingPaper()">다른 메시지 보기</button>
       <button class="btn btn-outline" onclick="openWriteModal()">메시지 남기기 ✏️</button>
     </div>
+    <p style="text-align:center;font-size:12px;color:var(--gray-500);margin-top:12px;">메시지 편집/삭제 비밀번호: <b>0503</b></p>
   </section>
 
   <!-- ═══════ Video Page ═══════ -->
@@ -1075,6 +1076,10 @@
       <div class="card-emoji" id="rolling-popup-emoji"></div>
       <div class="card-msg" id="rolling-popup-msg"></div>
       <div class="card-from" id="rolling-popup-from"></div>
+      <div class="popup-edit-actions" id="popup-edit-actions" style="display:none;margin-top:16px;display:none;justify-content:center;gap:8px;">
+        <button class="btn btn-outline" id="btn-popup-edit" style="padding:8px 20px;font-size:13px;">편집</button>
+        <button class="btn btn-outline" id="btn-popup-delete" style="padding:8px 20px;font-size:13px;color:#ef4444;border-color:#fca5a5;">삭제</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1406,9 +1411,11 @@ async function loadFirestoreMessages() {
   try {
     const snapshot = await messagesCollection.orderBy('createdAt', 'desc').get();
     firestoreMessages = snapshot.docs.map(doc => ({
+      id: doc.id,
       emoji: doc.data().emoji || '💌',
       msg: doc.data().msg,
-      from: doc.data().from
+      from: doc.data().from,
+      isFirestore: true
     }));
   } catch (e) { console.error('Messages load error:', e); }
 }
@@ -1439,7 +1446,10 @@ function renderRollingPaper() {
   });
 }
 
+let currentPopupMsg = null;
+
 function openRollingPopup(m, cardEl) {
+  currentPopupMsg = m;
   const overlay = document.getElementById('rolling-popup');
   const popupCard = document.getElementById('rolling-popup-card');
   document.getElementById('rolling-popup-emoji').textContent = m.emoji;
@@ -1451,19 +1461,63 @@ function openRollingPopup(m, cardEl) {
   const colorMatch = cardEl.className.match(/color-\d/);
   popupCard.className = 'rolling-popup-card';
   if (colorMatch) popupCard.classList.add(colorMatch[0]);
+  // Show edit/delete only for Firestore messages
+  const editActions = document.getElementById('popup-edit-actions');
+  editActions.style.display = m.isFirestore ? 'flex' : 'none';
   overlay.classList.add('show');
 }
 
-document.getElementById('rolling-popup-close').addEventListener('click', () => {
+function closeRollingPopup() {
   document.getElementById('rolling-popup').classList.remove('show');
-});
+  currentPopupMsg = null;
+}
+
+document.getElementById('rolling-popup-close').addEventListener('click', closeRollingPopup);
 document.getElementById('rolling-popup').addEventListener('click', (e) => {
-  if (e.target === e.currentTarget) e.currentTarget.classList.remove('show');
+  if (e.target === e.currentTarget) closeRollingPopup();
+});
+
+// ── Edit message ──
+document.getElementById('btn-popup-edit').addEventListener('click', () => {
+  if (!currentPopupMsg || !currentPopupMsg.isFirestore) return;
+  const pw = prompt('비밀번호를 입력하세요:');
+  if (pw !== '0503') { alert('비밀번호가 틀렸습니다.'); return; }
+  closeRollingPopup();
+  // Open write modal pre-filled
+  document.getElementById('write-name').value = currentPopupMsg.from || '';
+  document.getElementById('write-msg').value = currentPopupMsg.msg || '';
+  // Select emoji
+  const row = document.getElementById('write-emoji-row');
+  row.querySelectorAll('.write-emoji-btn').forEach(btn => {
+    btn.classList.toggle('selected', btn.dataset.emoji === currentPopupMsg.emoji);
+  });
+  selectedEmoji = currentPopupMsg.emoji;
+  editingMessageId = currentPopupMsg.id;
+  document.getElementById('write-overlay').classList.add('show');
+});
+
+// ── Delete message ──
+document.getElementById('btn-popup-delete').addEventListener('click', async () => {
+  if (!currentPopupMsg || !currentPopupMsg.isFirestore) return;
+  const pw = prompt('비밀번호를 입력하세요:');
+  if (pw !== '0503') { alert('비밀번호가 틀렸습니다.'); return; }
+  if (!confirm('정말 삭제하시겠습니까?')) return;
+  try {
+    await messagesCollection.doc(currentPopupMsg.id).delete();
+    firestoreMessages = firestoreMessages.filter(m => m.id !== currentPopupMsg.id);
+    renderRollingPaper();
+    closeRollingPopup();
+    alert('삭제되었습니다.');
+  } catch (e) {
+    console.error('Delete error:', e);
+    alert('삭제에 실패했어요: ' + e.message);
+  }
 });
 
 // ── Write Message ──
 const writeEmojis = ['🎉','🎂','🎈','💐','🥳','✨','💌','☀️','🌟','🎁','🍰','❤️','🫶','🧁'];
 let selectedEmoji = writeEmojis[0];
+let editingMessageId = null;
 
 (function initEmojiRow() {
   const row = document.getElementById('write-emoji-row');
@@ -1480,8 +1534,15 @@ let selectedEmoji = writeEmojis[0];
 })();
 
 function openWriteModal() {
+  editingMessageId = null;
   document.getElementById('write-name').value = '';
   document.getElementById('write-msg').value = '';
+  // Reset emoji selection
+  const row = document.getElementById('write-emoji-row');
+  row.querySelectorAll('.write-emoji-btn').forEach((btn, i) => {
+    btn.classList.toggle('selected', i === 0);
+  });
+  selectedEmoji = writeEmojis[0];
   document.getElementById('write-overlay').classList.add('show');
 }
 function closeWriteModal() {
@@ -1503,16 +1564,34 @@ document.getElementById('btn-write-submit').addEventListener('click', async () =
   btn.disabled = true;
 
   try {
-    await messagesCollection.add({
-      emoji: selectedEmoji,
-      msg: msg,
-      from: name,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    firestoreMessages.unshift({ emoji: selectedEmoji, msg: msg, from: name });
-    renderRollingPaper();
-    closeWriteModal();
-    alert('메시지가 등록되었어요! 🎉');
+    if (editingMessageId) {
+      // Edit mode
+      await messagesCollection.doc(editingMessageId).update({
+        emoji: selectedEmoji,
+        msg: msg,
+        from: name
+      });
+      const idx = firestoreMessages.findIndex(m => m.id === editingMessageId);
+      if (idx !== -1) {
+        firestoreMessages[idx] = { ...firestoreMessages[idx], emoji: selectedEmoji, msg: msg, from: name };
+      }
+      editingMessageId = null;
+      renderRollingPaper();
+      closeWriteModal();
+      alert('메시지가 수정되었어요! ✏️');
+    } else {
+      // New message
+      const docRef = await messagesCollection.add({
+        emoji: selectedEmoji,
+        msg: msg,
+        from: name,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      firestoreMessages.unshift({ id: docRef.id, emoji: selectedEmoji, msg: msg, from: name, isFirestore: true });
+      renderRollingPaper();
+      closeWriteModal();
+      alert('메시지가 등록되었어요! 🎉');
+    }
   } catch (e) {
     console.error('Save error:', e);
     alert('저장에 실패했어요: ' + e.message);
