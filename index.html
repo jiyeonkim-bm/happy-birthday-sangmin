@@ -406,6 +406,14 @@
       overflow: hidden;
     }
 
+    .rolling-card.font-1 .card-msg { font-family: 'Chiron GoRound TC', sans-serif; font-size: 13px; }
+    .rolling-card.font-2 .card-msg { font-family: 'Nanum Pen Script', cursive; font-size: 16px; }
+    .rolling-card.font-3 .card-msg { font-family: 'Gaegu', cursive; font-size: 14px; }
+
+    .rolling-popup-card.font-1 .card-msg { font-family: 'Chiron GoRound TC', sans-serif; }
+    .rolling-popup-card.font-2 .card-msg { font-family: 'Nanum Pen Script', cursive; font-size: 20px; }
+    .rolling-popup-card.font-3 .card-msg { font-family: 'Gaegu', cursive; font-size: 18px; }
+
     .rolling-actions {
       display: flex;
       justify-content: center;
@@ -1355,7 +1363,7 @@ async function deletePhotoFirebase(id) {
 // Rolling Paper
 // ══════════════════════════════════════
 const colorClasses = ['color-1','color-2','color-3','color-4','color-5','color-6'];
-const cardFonts = ["'Chiron GoRound TC', sans-serif", "'Nanum Pen Script', cursive", "'Gaegu', cursive"];
+const fontClasses = ['font-1', 'font-2', 'font-3'];
 
 function shuffle(arr) {
   const a = [...arr];
@@ -1390,9 +1398,9 @@ function renderRollingPaper() {
   currentCards = shuffle([...firestoreMessages]);
   grid.innerHTML = currentCards.map((m, i) => {
     const color = colorClasses[i % colorClasses.length];
-    const font = cardFonts[Math.floor(Math.random() * cardFonts.length)];
+    const font = fontClasses[Math.floor(Math.random() * fontClasses.length)];
     return `
-    <div class="rolling-card ${color}" data-idx="${i}" style="font-family:${font}">
+    <div class="rolling-card ${color} ${font}" data-idx="${i}">
       <div class="card-emoji">${m.emoji}</div>
       <div class="card-msg">${m.msg}</div>
       ${m.from ? `<div class="card-from">- ${m.from}</div>` : ''}
@@ -1418,10 +1426,12 @@ function openRollingPopup(m, cardEl) {
   const fromEl = document.getElementById('rolling-popup-from');
   fromEl.textContent = m.from ? `- ${m.from}` : '';
   fromEl.style.display = m.from ? 'block' : 'none';
-  // Same color as the card
+  // Same color + font as the card
   const colorMatch = cardEl.className.match(/color-\d/);
+  const fontMatch = cardEl.className.match(/font-\d/);
   popupCard.className = 'rolling-popup-card';
   if (colorMatch) popupCard.classList.add(colorMatch[0]);
+  if (fontMatch) popupCard.classList.add(fontMatch[0]);
   // Show edit/delete only for Firestore messages
   const editActions = document.getElementById('popup-edit-actions');
   editActions.style.display = m.isFirestore ? 'flex' : 'none';
