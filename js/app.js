@@ -771,11 +771,12 @@ function startSpin() {
 
   var count = ROULETTE_MISSIONS.length;
   var arc = (Math.PI * 2) / count;
-  var missionIndex = Math.floor(Math.random() * count);
   var personIndex = Math.floor(Math.random() * ROULETTE_PEOPLE.length);
 
-  var extraSpins = Math.PI * 2 * (4 + Math.random() * 3);
-  var targetAngle = (-Math.PI / 2 - arc * missionIndex - arc / 2) + extraSpins;
+  // Spin to a random angle (don't pre-pick mission, detect it from final angle)
+  var extraSpins = Math.PI * 2 * (5 + Math.random() * 3);
+  var randomOffset = Math.random() * Math.PI * 2;
+  var targetAngle = rouletteAngle + extraSpins + randomOffset;
 
   var startAngle = rouletteAngle;
   var totalRotation = targetAngle - startAngle;
@@ -793,7 +794,13 @@ function startSpin() {
       if (progress < 1) {
         requestAnimationFrame(animateRoulette);
       } else {
-        rouletteAngle = currentAngle % (Math.PI * 2);
+        rouletteAngle = currentAngle;
+        // Detect which mission the pointer landed on
+        var pointerAngle = -Math.PI / 2;
+        var normalizedAngle = (pointerAngle - rouletteAngle) % (Math.PI * 2);
+        if (normalizedAngle < 0) normalizedAngle += Math.PI * 2;
+        var missionIndex = Math.floor(normalizedAngle / arc) % count;
+
         // Roulette done → start slot machine
         spinBtn.textContent = '당첨자 추첨 중...';
         var targetName = ROULETTE_PEOPLE[personIndex];
