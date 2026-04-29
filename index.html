@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Chiron+GoRound+TC:wght@200..900&family=Nanum+Pen+Script&family=Gaegu&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=5">
+  <link rel="stylesheet" href="css/style.css?v=7">
 </head>
 <body>
 
@@ -70,6 +70,7 @@
     <div class="rolling-grid" id="rolling-grid"></div>
     <div class="rolling-actions">
       <button class="btn btn-mint" onclick="openWriteModal()">메시지 남기기 ✏️</button>
+      <button class="btn btn-outline" onclick="openDrawModal()">낙서 남기기 🎨</button>
     </div>
     <p style="text-align:center;font-size:12px;color:var(--gray-500);margin-top:12px;">메시지 편집/삭제 비밀번호: <b>0503</b></p>
   </section>
@@ -179,6 +180,34 @@
   </div>
 </div>
 
+<!-- Draw Modal -->
+<div class="draw-overlay" id="draw-overlay">
+  <div class="draw-card">
+    <h3>상민님에게 낙서 남기기</h3>
+    <div class="draw-canvas-wrap">
+      <canvas id="draw-canvas" width="600" height="400"></canvas>
+    </div>
+    <div class="draw-tools">
+      <div class="draw-colors" id="draw-colors"></div>
+      <div class="draw-sizes">
+        <button class="draw-size-btn active" data-size="3">S</button>
+        <button class="draw-size-btn" data-size="6">M</button>
+        <button class="draw-size-btn" data-size="12">L</button>
+      </div>
+      <button class="draw-tool-btn" id="btn-eraser">지우개</button>
+      <button class="draw-tool-btn" id="btn-clear">전체삭제</button>
+    </div>
+    <div class="write-field" style="margin-top:12px;">
+      <label>이름</label>
+      <input type="text" id="draw-name" placeholder="이름을 입력하세요" maxlength="20">
+    </div>
+    <div class="write-actions">
+      <button class="btn btn-mint" id="btn-draw-submit">남기기</button>
+      <button class="btn btn-outline" onclick="closeDrawModal()">취소</button>
+    </div>
+  </div>
+</div>
+
 <!-- Photo Preview Popup -->
 <div class="photo-preview-popup" id="photo-preview">
   <div class="preview-inner">
@@ -192,7 +221,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
-<script src="js/app.js?v=6"></script>
+<script src="js/app.js?v=7"></script>
 
 </body>
 </html>

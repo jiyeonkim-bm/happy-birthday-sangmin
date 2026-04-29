@@ -353,6 +353,77 @@ main {
 .btn-outline:hover { background: rgba(20,184,166,0.08); border-color: var(--mint-400); transform: translateY(-2px); }
 
 /* ══════════════════════════════════════
+   Draw Modal
+   ══════════════════════════════════════ */
+.draw-overlay { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.45); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 16px; }
+.draw-overlay.show { display: flex; animation: fadeIn 0.25s ease; }
+
+.draw-card {
+  position: relative; max-width: 480px; width: 100%; border-radius: 3px; padding: 28px 22px 22px;
+  background-color: #fffef2; box-shadow: 4px 6px 30px rgba(0,0,0,0.2);
+  animation: popIn 0.35s cubic-bezier(0.16,1,0.3,1);
+  background-image:
+    url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+}
+
+.draw-card::after { content: ''; position: absolute; top: -6px; left: 50%; transform: translateX(-50%) rotate(-1deg); width: 60px; height: 22px; border-radius: 2px; background: #f9a8d4; opacity: 0.55; z-index: 2; }
+.draw-card h3 { font-size: 18px; font-weight: 900; color: var(--gray-900); margin-bottom: 16px; text-align: center; }
+
+.draw-canvas-wrap {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid rgba(0,0,0,0.08);
+  margin-bottom: 12px;
+  background: #fff;
+  touch-action: none;
+}
+
+#draw-canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+  cursor: crosshair;
+}
+
+.draw-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.draw-colors { display: flex; gap: 4px; }
+.draw-color-btn {
+  width: 28px; height: 28px; border-radius: 50%; border: 2.5px solid transparent;
+  cursor: pointer; transition: all 0.15s;
+}
+.draw-color-btn:hover { transform: scale(1.15); }
+.draw-color-btn.active { border-color: var(--gray-900); box-shadow: 0 0 0 2px white, 0 0 0 4px var(--gray-900); }
+
+.draw-sizes { display: flex; gap: 4px; }
+.draw-size-btn {
+  width: 30px; height: 30px; border-radius: 8px; border: 1.5px solid rgba(0,0,0,0.1);
+  background: var(--white); font-size: 11px; font-weight: 900; color: var(--gray-500);
+  cursor: pointer; font-family: inherit; transition: all 0.15s;
+}
+.draw-size-btn.active { background: var(--mint-100); border-color: var(--mint-400); color: var(--mint-700); }
+
+.draw-tool-btn {
+  padding: 5px 12px; border-radius: 8px; border: 1.5px solid rgba(0,0,0,0.1);
+  background: var(--white); font-size: 12px; font-weight: 700; color: var(--gray-500);
+  cursor: pointer; font-family: inherit; transition: all 0.15s;
+}
+.draw-tool-btn:hover { background: rgba(0,0,0,0.04); }
+.draw-tool-btn.active { background: var(--gray-900); color: var(--white); border-color: var(--gray-900); }
+
+/* Drawing card in grid */
+.rolling-card .card-drawing { width: 100%; border-radius: 4px; margin-bottom: 6px; }
+
+/* Drawing in popup */
+.rolling-popup-card .card-drawing { width: 100%; border-radius: 6px; margin-bottom: 12px; }
+
+/* ══════════════════════════════════════
    Photo Booth
    ══════════════════════════════════════ */
 .photo-section { display: flex; flex-direction: column; align-items: center; }

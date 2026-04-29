@@ -245,8 +245,9 @@ async function loadFirestoreMessages() {
     firestoreMessages = snapshot.docs.map(doc => ({
       id: doc.id,
       emoji: doc.data().emoji || '💌',
-      msg: doc.data().msg,
+      msg: doc.data().msg || '',
       from: doc.data().from || '',
+      drawingUrl: doc.data().drawingUrl || '',
       isFirestore: true
     }));
   } catch (e) { console.error('Messages load error:', e); }
@@ -260,10 +261,12 @@ function renderRollingPaper() {
   grid.innerHTML = currentCards.map((m, i) => {
     const color = colorClasses[i % colorClasses.length];
     const font = fontClasses[Math.floor(Math.random() * fontClasses.length)];
+    const content = m.drawingUrl
+      ? `<img class="card-drawing" src="${m.drawingUrl}" alt="drawing">`
+      : `<div class="card-emoji">${m.emoji}</div><div class="card-msg">${m.msg}</div>`;
     return `
     <div class="rolling-card ${color} ${font}" data-idx="${i}">
-      <div class="card-emoji">${m.emoji}</div>
-      <div class="card-msg">${m.msg}</div>
+      ${content}
       ${m.from ? `<div class="card-from">- ${m.from}</div>` : ''}
     </div>`;
   }).join('');
@@ -282,8 +285,15 @@ function openRollingPopup(m, cardEl) {
   currentPopupMsg = m;
   const overlay = document.getElementById('rolling-popup');
   const popupCard = document.getElementById('rolling-popup-card');
-  document.getElementById('rolling-popup-emoji').textContent = m.emoji;
-  document.getElementById('rolling-popup-msg').textContent = m.msg;
+  var emojiEl = document.getElementById('rolling-popup-emoji');
+  var msgEl = document.getElementById('rolling-popup-msg');
+  if (m.drawingUrl) {
+    emojiEl.innerHTML = '';
+    msgEl.innerHTML = '<img class="card-drawing" src="' + m.drawingUrl + '" alt="drawing">';
+  } else {
+    emojiEl.textContent = m.emoji;
+    msgEl.textContent = m.msg;
+  }
   const fromEl = document.getElementById('rolling-popup-from');
   fromEl.textContent = m.from ? `- ${m.from}` : '';
   fromEl.style.display = m.from ? 'block' : 'none';
@@ -916,3 +926,172 @@ function stopRouletteConfetti() {
 document.getElementById('btn-spin').addEventListener('click', startSpin);
 drawRoulette(0);
 initSlotDisplay(3);
+
+// ══════════════════════════════════════
+// Drawing Canvas
+// ══════════════════════════════════════
+var drawCanvas = document.getElementById('draw-canvas');
+var dCtx = drawCanvas.getContext('2d');
+var isDrawing = false;
+var drawColor = '#374151';
+var drawSize = 3;
+var isEraser = false;
+
+const DRAW_COLORS = ['#374151','#ef4444','#f97316','#eab308','#22c55e','#14b8a6','#3b82f6','#8b5cf6','#ec4899','#ffffff'];
+
+// Init color buttons
+(function initDrawColors() {
+  var row = document.getElementById('draw-colors');
+  row.innerHTML = DRAW_COLORS.map(function(c, i) {
+    var border = c === '#ffffff' ? 'border:2px solid #ccc;' : '';
+    return '<button class="draw-color-btn' + (i === 0 ? ' active' : '') + '" data-color="' + c + '" style="background:' + c + ';' + border + '"></button>';
+  }).join('');
+  row.querySelectorAll('.draw-color-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      row.querySelectorAll('.draw-color-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      drawColor = btn.dataset.color;
+      isEraser = false;
+      document.getElementById('btn-eraser').classList.remove('active');
+      drawCanvas.style.cursor = 'crosshair';
+    });
+  });
+})();
+
+// Size buttons
+document.querySelectorAll('.draw-size-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.draw-size-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    drawSize = parseInt(btn.dataset.size);
+  });
+});
+
+// Eraser
+document.getElementById('btn-eraser').addEventListener('click', function() {
+  isEraser = !isEraser;
+  this.classList.toggle('active', isEraser);
+  drawCanvas.style.cursor = isEraser ? 'grab' : 'crosshair';
+});
+
+// Clear
+document.getElementById('btn-clear').addEventListener('click', function() {
+  dCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+});
+
+// Drawing logic
+function getDrawPos(e) {
+  var rect = drawCanvas.getBoundingClientRect();
+  var scaleX = drawCanvas.width / rect.width;
+  var scaleY = drawCanvas.height / rect.height;
+  var clientX, clientY;
+  if (e.touches) {
+    clientX = e.touches[0].clientX;
+    clientY = e.touches[0].clientY;
+  } else {
+    clientX = e.clientX;
+    clientY = e.clientY;
+  }
+  return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+}
+
+function startDraw(e) {
+  e.preventDefault();
+  isDrawing = true;
+  var pos = getDrawPos(e);
+  dCtx.beginPath();
+  dCtx.moveTo(pos.x, pos.y);
+}
+
+function moveDraw(e) {
+  if (!isDrawing) return;
+  e.preventDefault();
+  var pos = getDrawPos(e);
+  dCtx.lineTo(pos.x, pos.y);
+  dCtx.strokeStyle = isEraser ? '#ffffff' : drawColor;
+  dCtx.lineWidth = isEraser ? drawSize * 4 : drawSize;
+  dCtx.lineCap = 'round';
+  dCtx.lineJoin = 'round';
+  dCtx.stroke();
+}
+
+function endDraw(e) {
+  if (isDrawing) {
+    isDrawing = false;
+    dCtx.closePath();
+  }
+}
+
+drawCanvas.addEventListener('mousedown', startDraw);
+drawCanvas.addEventListener('mousemove', moveDraw);
+drawCanvas.addEventListener('mouseup', endDraw);
+drawCanvas.addEventListener('mouseleave', endDraw);
+drawCanvas.addEventListener('touchstart', startDraw);
+drawCanvas.addEventListener('touchmove', moveDraw);
+drawCanvas.addEventListener('touchend', endDraw);
+
+function openDrawModal() {
+  dCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+  document.getElementById('draw-name').value = '';
+  isEraser = false;
+  document.getElementById('btn-eraser').classList.remove('active');
+  drawCanvas.style.cursor = 'crosshair';
+  document.getElementById('draw-overlay').classList.add('show');
+}
+
+function closeDrawModal() {
+  document.getElementById('draw-overlay').classList.remove('show');
+}
+
+document.getElementById('draw-overlay').addEventListener('click', function(e) {
+  if (e.target === e.currentTarget) closeDrawModal();
+});
+
+document.getElementById('btn-draw-submit').addEventListener('click', async function() {
+  var name = document.getElementById('draw-name').value.trim();
+  if (!name) { alert('이름을 입력해주세요!'); return; }
+
+  // Check if canvas is blank
+  var blank = document.createElement('canvas');
+  blank.width = drawCanvas.width;
+  blank.height = drawCanvas.height;
+  if (drawCanvas.toDataURL() === blank.toDataURL()) {
+    alert('그림을 그려주세요!');
+    return;
+  }
+
+  var btn = this;
+  btn.textContent = '저장 중...';
+  btn.disabled = true;
+
+  try {
+    var dataUrl = drawCanvas.toDataURL('image/png', 0.7);
+    // Compress if too large
+    if (dataUrl.length > 800000) {
+      var tmpCanvas = document.createElement('canvas');
+      tmpCanvas.width = 400;
+      tmpCanvas.height = Math.round(400 * drawCanvas.height / drawCanvas.width);
+      var tmpCtx = tmpCanvas.getContext('2d');
+      var img = new Image();
+      await new Promise(function(r) { img.onload = r; img.src = dataUrl; });
+      tmpCtx.drawImage(img, 0, 0, tmpCanvas.width, tmpCanvas.height);
+      dataUrl = tmpCanvas.toDataURL('image/jpeg', 0.6);
+    }
+
+    var docRef = await messagesCollection.add({
+      drawingUrl: dataUrl,
+      from: name,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    firestoreMessages.unshift({ id: docRef.id, emoji: '🎨', msg: '', from: name, drawingUrl: dataUrl, isFirestore: true });
+    renderRollingPaper();
+    closeDrawModal();
+    alert('낙서가 등록되었어요! 🎨');
+  } catch (e) {
+    console.error('Draw save error:', e);
+    alert('저장에 실패했어요: ' + e.message);
+  } finally {
+    btn.textContent = '남기기';
+    btn.disabled = false;
+  }
+});
