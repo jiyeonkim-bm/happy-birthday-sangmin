@@ -300,38 +300,29 @@
     /* ── Rolling Paper Page ── */
     .rolling-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      padding: 20px 10px;
     }
 
     .rolling-card {
       background: #fffef2;
       border: none;
       border-radius: 4px;
-      padding: 28px 22px 22px;
+      padding: 28px 20px 20px;
       position: relative;
-      overflow: hidden;
-      transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s ease;
+      overflow: visible;
+      cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s ease, z-index 0s;
       animation: popIn 0.4s cubic-bezier(0.16,1,0.3,1) backwards;
       box-shadow: 2px 3px 12px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
-      background-image: repeating-linear-gradient(
-        transparent, transparent 27px, #e8e4d4 27px, #e8e4d4 28px
-      );
-      background-position: 0 24px;
+      margin: -8px -4px;
+      z-index: 1;
+      min-height: 160px;
     }
 
-    .rolling-card::after {
-      content: '';
-      position: absolute;
-      top: -6px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 50px;
-      height: 20px;
-      background: rgba(20, 184, 166, 0.35);
-      border-radius: 2px;
-      z-index: 2;
-    }
+    .rolling-card::after { content: none; }
+    .rolling-card::before { content: none; }
 
     .rolling-card .card-from {
       font-size: 12px;
@@ -360,10 +351,11 @@
     }
 
     .rolling-card:hover {
-      transform: translateY(-6px) rotate(-2deg);
-      box-shadow: 4px 6px 20px rgba(0,0,0,0.15);
+      z-index: 10;
+      box-shadow: 4px 8px 24px rgba(0,0,0,0.18);
     }
 
+    /* ── Color variants ── */
     .rolling-card.color-1 { background-color: #fffef2; }
     .rolling-card.color-2 { background-color: #fff5ee; }
     .rolling-card.color-3 { background-color: #fff0f5; }
@@ -371,40 +363,214 @@
     .rolling-card.color-5 { background-color: #f0f7ff; }
     .rolling-card.color-6 { background-color: #f0fff5; }
 
-    .rolling-card.color-1 { background-image: repeating-linear-gradient(transparent, transparent 27px, #e8e4d4 27px, #e8e4d4 28px); }
-    .rolling-card.color-2 { background-image: repeating-linear-gradient(transparent, transparent 27px, #e8ddd4 27px, #e8ddd4 28px); }
-    .rolling-card.color-3 { background-image: repeating-linear-gradient(transparent, transparent 27px, #e8d4dc 27px, #e8d4dc 28px); }
-    .rolling-card.color-4 { background-image: repeating-linear-gradient(transparent, transparent 27px, #ddd4e8 27px, #ddd4e8 28px); }
-    .rolling-card.color-5 { background-image: repeating-linear-gradient(transparent, transparent 27px, #d4dde8 27px, #d4dde8 28px); }
-    .rolling-card.color-6 { background-image: repeating-linear-gradient(transparent, transparent 27px, #d4e8dc 27px, #d4e8dc 28px); }
+    /* ── Style: tape (마스킹테이프) ── */
+    .rolling-card.style-tape {
+      border-radius: 2px;
+      background-image: repeating-linear-gradient(transparent, transparent 27px, rgba(0,0,0,0.06) 27px, rgba(0,0,0,0.06) 28px);
+      background-position: 0 24px;
+      padding-top: 32px;
+    }
+    .rolling-card.style-tape::after {
+      content: '';
+      position: absolute;
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-2deg);
+      width: 54px;
+      height: 20px;
+      border-radius: 2px;
+      z-index: 2;
+      opacity: 0.7;
+    }
+    .rolling-card.style-tape.color-1::after { background: #99f6e4; }
+    .rolling-card.style-tape.color-2::after { background: #fdba74; }
+    .rolling-card.style-tape.color-3::after { background: #f9a8d4; }
+    .rolling-card.style-tape.color-4::after { background: #c4b5fd; }
+    .rolling-card.style-tape.color-5::after { background: #93c5fd; }
+    .rolling-card.style-tape.color-6::after { background: #fde68a; }
 
-    .rolling-card.color-1::after { background: rgba(20, 184, 166, 0.35); }
-    .rolling-card.color-2::after { background: rgba(251, 146, 60, 0.35); }
-    .rolling-card.color-3::after { background: rgba(244, 114, 182, 0.35); }
-    .rolling-card.color-4::after { background: rgba(167, 139, 250, 0.35); }
-    .rolling-card.color-5::after { background: rgba(96, 165, 250, 0.35); }
-    .rolling-card.color-6::after { background: rgba(250, 204, 21, 0.35); }
+    /* ── Style: pin (압정) ── */
+    .rolling-card.style-pin {
+      border-radius: 3px;
+      padding-top: 30px;
+    }
+    .rolling-card.style-pin::after {
+      content: '';
+      position: absolute;
+      top: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      z-index: 2;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2), inset 0 -1px 2px rgba(0,0,0,0.15);
+    }
+    .rolling-card.style-pin.color-1::after { background: radial-gradient(circle at 40% 35%, #5eead4, #0d9488); }
+    .rolling-card.style-pin.color-2::after { background: radial-gradient(circle at 40% 35%, #fb923c, #c2410c); }
+    .rolling-card.style-pin.color-3::after { background: radial-gradient(circle at 40% 35%, #f472b6, #be185d); }
+    .rolling-card.style-pin.color-4::after { background: radial-gradient(circle at 40% 35%, #a78bfa, #6d28d9); }
+    .rolling-card.style-pin.color-5::after { background: radial-gradient(circle at 40% 35%, #60a5fa, #1d4ed8); }
+    .rolling-card.style-pin.color-6::after { background: radial-gradient(circle at 40% 35%, #facc15, #a16207); }
 
-    .rolling-card:nth-child(odd) { transform: rotate(-1.5deg); }
-    .rolling-card:nth-child(even) { transform: rotate(1.5deg); }
+    /* ── Style: sticky (포스트잇) ── */
+    .rolling-card.style-sticky {
+      border-radius: 2px;
+      background-image: none;
+      box-shadow: 2px 3px 8px rgba(0,0,0,0.1);
+      padding-top: 22px;
+    }
+    .rolling-card.style-sticky::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.06) 50%, rgba(0,0,0,0.03) 100%);
+      border-radius: 0 0 0 0;
+    }
+    .rolling-card.style-sticky.color-1 { background-color: #fef9c3; }
+    .rolling-card.style-sticky.color-2 { background-color: #ffe4c9; }
+    .rolling-card.style-sticky.color-3 { background-color: #fce7f3; }
+    .rolling-card.style-sticky.color-4 { background-color: #ede9fe; }
+    .rolling-card.style-sticky.color-5 { background-color: #dbeafe; }
+    .rolling-card.style-sticky.color-6 { background-color: #d1fae5; }
+
+    /* ── Style: clip (클립) ── */
+    .rolling-card.style-clip {
+      border-radius: 4px;
+      background-image: repeating-linear-gradient(transparent, transparent 27px, rgba(0,0,0,0.05) 27px, rgba(0,0,0,0.05) 28px);
+      background-position: 0 24px;
+      padding-top: 26px;
+    }
+    .rolling-card.style-clip::after {
+      content: '';
+      position: absolute;
+      top: -8px;
+      right: 16px;
+      width: 18px;
+      height: 32px;
+      border: 3px solid #aaa;
+      border-radius: 8px 8px 0 0;
+      background: transparent;
+      z-index: 2;
+    }
+    .rolling-card.style-clip.color-1::after { border-color: #5eead4; }
+    .rolling-card.style-clip.color-2::after { border-color: #fb923c; }
+    .rolling-card.style-clip.color-3::after { border-color: #f472b6; }
+    .rolling-card.style-clip.color-4::after { border-color: #a78bfa; }
+    .rolling-card.style-clip.color-5::after { border-color: #60a5fa; }
+    .rolling-card.style-clip.color-6::after { border-color: #facc15; }
+
+    /* ── Style: fold (접힌 모서리) ── */
+    .rolling-card.style-fold {
+      border-radius: 0 20px 0 0;
+      background-image: none;
+      padding-top: 22px;
+      overflow: hidden;
+    }
+    .rolling-card.style-fold::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 28px;
+      height: 28px;
+      z-index: 2;
+    }
+    .rolling-card.style-fold.color-1::after { background: linear-gradient(225deg, #f5f5dc 45%, rgba(0,0,0,0.08) 45%, rgba(0,0,0,0.08) 50%, #fffef2 50%); }
+    .rolling-card.style-fold.color-2::after { background: linear-gradient(225deg, #f5e6d8 45%, rgba(0,0,0,0.08) 45%, rgba(0,0,0,0.08) 50%, #fff5ee 50%); }
+    .rolling-card.style-fold.color-3::after { background: linear-gradient(225deg, #f5dce6 45%, rgba(0,0,0,0.08) 45%, rgba(0,0,0,0.08) 50%, #fff0f5 50%); }
+    .rolling-card.style-fold.color-4::after { background: linear-gradient(225deg, #e2d8f5 45%, rgba(0,0,0,0.08) 45%, rgba(0,0,0,0.08) 50%, #f5f0ff 50%); }
+    .rolling-card.style-fold.color-5::after { background: linear-gradient(225deg, #d0e0f5 45%, rgba(0,0,0,0.08) 45%, rgba(0,0,0,0.08) 50%, #f0f7ff 50%); }
+    .rolling-card.style-fold.color-6::after { background: linear-gradient(225deg, #d8f5e0 45%, rgba(0,0,0,0.08) 45%, rgba(0,0,0,0.08) 50%, #f0fff5 50%); }
 
     .rolling-card .card-emoji {
-      font-size: 32px;
-      margin-bottom: 14px;
+      font-size: 28px;
+      margin-bottom: 10px;
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
     }
 
     .rolling-card .card-msg {
-      font-size: 14px;
-      line-height: 1.8;
+      font-size: 13px;
+      line-height: 1.7;
       color: var(--gray-700);
       word-break: keep-all;
+      display: -webkit-box;
+      -webkit-line-clamp: 5;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
     .rolling-refresh {
       display: flex;
       justify-content: center;
       margin-top: 36px;
+    }
+
+    /* ── Rolling Paper Popup ── */
+    .rolling-popup-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .rolling-popup-overlay.show {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+    .rolling-popup-card {
+      position: relative;
+      max-width: 440px;
+      width: 100%;
+      padding: 36px 30px 30px;
+      border-radius: 6px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+      animation: popIn 0.35s cubic-bezier(0.16,1,0.3,1);
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .rolling-popup-card .card-emoji {
+      font-size: 44px;
+      margin-bottom: 16px;
+    }
+    .rolling-popup-card .card-msg {
+      font-size: 16px;
+      line-height: 1.9;
+      color: var(--gray-700);
+      word-break: keep-all;
+      -webkit-line-clamp: unset;
+      overflow: visible;
+    }
+    .rolling-popup-card .card-from {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--mint-600);
+      margin-top: 20px;
+      text-align: right;
+    }
+    .rolling-popup-close {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      background: none;
+      border: none;
+      font-size: 22px;
+      color: var(--gray-500);
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 50%;
+      transition: background 0.2s;
+    }
+    .rolling-popup-close:hover {
+      background: rgba(0,0,0,0.06);
     }
 
     /* ── Buttons ── */
@@ -731,7 +897,7 @@
       .countdown-box { min-width: 72px; padding: 20px 14px 16px; }
       .countdown-box .number { font-size: 34px; }
       .countdown-title { font-size: 26px; }
-      .rolling-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .rolling-grid { grid-template-columns: 1fr 1fr; }
       .gallery-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
     }
 
@@ -843,6 +1009,16 @@
     </div>
   </section>
 </main>
+
+<!-- Rolling Paper Popup -->
+<div class="rolling-popup-overlay" id="rolling-popup">
+  <div class="rolling-popup-card" id="rolling-popup-card">
+    <button class="rolling-popup-close" id="rolling-popup-close">&times;</button>
+    <div class="card-emoji" id="rolling-popup-emoji"></div>
+    <div class="card-msg" id="rolling-popup-msg"></div>
+    <div class="card-from" id="rolling-popup-from"></div>
+  </div>
+</div>
 
 <!-- Photo Preview Popup -->
 <div class="photo-preview-popup" id="photo-preview">
@@ -1076,6 +1252,8 @@ const rollingMessages = [
 ];
 
 const colorClasses = ['color-1','color-2','color-3','color-4','color-5','color-6'];
+const styleClasses = ['style-tape','style-pin','style-sticky','style-clip','style-fold'];
+const rotations = [-3, -1.5, 0.5, 2, -2, 1, -0.5, 2.5, -1, 1.5, -2.5, 3];
 
 function shuffle(arr) {
   const a = [...arr];
@@ -1086,19 +1264,57 @@ function shuffle(arr) {
   return a;
 }
 
+let currentCards = [];
+
 function renderRollingPaper() {
   const grid = document.getElementById('rolling-grid');
   const pinned = rollingMessages.filter(m => m.from);
   const rest = shuffle(rollingMessages.filter(m => !m.from)).slice(0, 12 - pinned.length);
-  const shuffled = [...pinned, ...rest];
-  grid.innerHTML = shuffled.map((m, i) => `
-    <div class="rolling-card ${colorClasses[i % colorClasses.length]}">
+  currentCards = [...pinned, ...rest];
+  grid.innerHTML = currentCards.map((m, i) => {
+    const color = colorClasses[i % colorClasses.length];
+    const style = styleClasses[i % styleClasses.length];
+    const rot = rotations[i % rotations.length];
+    return `
+    <div class="rolling-card ${color} ${style}" style="transform:rotate(${rot}deg)" data-idx="${i}">
       <div class="card-emoji">${m.emoji}</div>
       <div class="card-msg">${m.msg}</div>
       ${m.from ? `<div class="card-from">- ${m.from}</div>` : ''}
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
+
+  grid.querySelectorAll('.rolling-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const idx = parseInt(card.dataset.idx);
+      openRollingPopup(currentCards[idx], card.className);
+    });
+  });
 }
+
+function openRollingPopup(m, cardClass) {
+  const overlay = document.getElementById('rolling-popup');
+  const popupCard = document.getElementById('rolling-popup-card');
+  document.getElementById('rolling-popup-emoji').textContent = m.emoji;
+  document.getElementById('rolling-popup-msg').textContent = m.msg;
+  const fromEl = document.getElementById('rolling-popup-from');
+  fromEl.textContent = m.from ? `- ${m.from}` : '';
+  fromEl.style.display = m.from ? 'block' : 'none';
+  // Apply same color to popup
+  popupCard.className = 'rolling-popup-card';
+  const colorMatch = cardClass.match(/color-\d/);
+  if (colorMatch) popupCard.classList.add(colorMatch[0]);
+  overlay.classList.add('show');
+}
+
+document.getElementById('rolling-popup-close').addEventListener('click', () => {
+  document.getElementById('rolling-popup').classList.remove('show');
+});
+document.getElementById('rolling-popup').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) e.currentTarget.classList.remove('show');
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') document.getElementById('rolling-popup').classList.remove('show');
+});
 
 renderRollingPaper();
 
