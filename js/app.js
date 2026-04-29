@@ -631,16 +631,11 @@ const ROULETTE_MISSIONS = [
   { emoji: '🍽️', text: '상민님 점심 사주기' },
   { emoji: '🍰', text: '상민님에게 케이크 or 디저트 선물하기' },
   { emoji: '📸', text: '상민님과 인생네컷 찍으러 가기' },
-  { emoji: '🫶', text: '오늘 하루 상민님 칭찬 10번 하기' },
   { emoji: '🏃', text: '상민님이 시키는 심부름 1회 무조건 수행' },
   { emoji: '🥤', text: '상민님에게 오늘 음료 배달하기' },
   { emoji: '🍜', text: '상민님이 먹고 싶은 거 배달 시켜주기' },
-  { emoji: '🧋', text: '상민님에게 버블티 사다주기' },
   { emoji: '🍫', text: '상민님 간식 바구니 채워주기' },
   { emoji: '🎂', text: '상민님에게 생일 편의점 케이크 사주기' },
-  { emoji: '🍿', text: '상민님에게 영화 관람권 선물하기' },
-  { emoji: '🧃', text: '상민님에게 일주일간 매일 음료 사주기' },
-  { emoji: '🎫', text: '상민님에게 문화상품권 선물하기' },
 ];
 
 const ROULETTE_COLORS = [
