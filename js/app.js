@@ -775,7 +775,7 @@ function startSpin() {
   var personIndex = Math.floor(Math.random() * ROULETTE_PEOPLE.length);
 
   var extraSpins = Math.PI * 2 * (4 + Math.random() * 3);
-  var targetAngle = -(-Math.PI / 2 - arc * missionIndex - arc / 2) + extraSpins;
+  var targetAngle = (-Math.PI / 2 - arc * missionIndex - arc / 2) + extraSpins;
 
   var startAngle = rouletteAngle;
   var totalRotation = targetAngle - startAngle;
