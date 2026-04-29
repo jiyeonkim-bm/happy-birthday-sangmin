@@ -828,13 +828,90 @@ function startSpin() {
 function showResult(missionIndex, personIndex) {
   const mission = ROULETTE_MISSIONS[missionIndex];
   const person = ROULETTE_PEOPLE[personIndex];
-  document.getElementById('roulette-result').innerHTML = `
-    <div class="roulette-result-card">
+  const popup = document.getElementById('roulette-popup');
+  const content = document.getElementById('roulette-popup-content');
+
+  content.innerHTML = `
+    <div class="result-popup-card">
+      <div class="result-title">당첨</div>
       <div class="result-emoji">${mission.emoji}</div>
       <div class="result-person">${person}</div>
       <div class="result-mission">${mission.text}</div>
+      <button class="result-popup-close" id="result-close-btn">확인</button>
     </div>
   `;
+
+  popup.classList.add('show');
+  startRouletteConfetti();
+
+  document.getElementById('result-close-btn').addEventListener('click', function() {
+    popup.classList.remove('show');
+    stopRouletteConfetti();
+  });
+  popup.addEventListener('click', function handler(e) {
+    if (e.target === popup) {
+      popup.classList.remove('show');
+      stopRouletteConfetti();
+      popup.removeEventListener('click', handler);
+    }
+  });
+}
+
+// ── Roulette confetti ──
+var rouletteConfettiCanvas = document.getElementById('roulette-confetti');
+var rcCtx = rouletteConfettiCanvas.getContext('2d');
+var rcPieces = [];
+var rcRunning = false;
+var RC_COLORS = ['#14b8a6','#5eead4','#f472b6','#fb923c','#a78bfa','#60a5fa','#facc15','#34d399','#f87171','#c084fc','#fbbf24','#f9a8d4'];
+
+function startRouletteConfetti() {
+  rouletteConfettiCanvas.width = window.innerWidth;
+  rouletteConfettiCanvas.height = window.innerHeight;
+  rcPieces = [];
+  rcRunning = true;
+  for (var i = 0; i < 120; i++) {
+    rcPieces.push({
+      x: Math.random() * rouletteConfettiCanvas.width,
+      y: Math.random() * -rouletteConfettiCanvas.height - 20,
+      w: Math.random() * 10 + 5,
+      h: Math.random() * 6 + 3,
+      color: RC_COLORS[Math.floor(Math.random() * RC_COLORS.length)],
+      rot: Math.random() * 360,
+      rotS: (Math.random() - 0.5) * 10,
+      vy: Math.random() * 3 + 2,
+      vx: (Math.random() - 0.5) * 3,
+      wobble: Math.random() * Math.PI * 2,
+      wobbleS: Math.random() * 0.06 + 0.02
+    });
+  }
+  animateRouletteConfetti();
+}
+
+function animateRouletteConfetti() {
+  if (!rcRunning) return;
+  rcCtx.clearRect(0, 0, rouletteConfettiCanvas.width, rouletteConfettiCanvas.height);
+  rcPieces.forEach(function(p) {
+    p.y += p.vy;
+    p.x += p.vx + Math.sin(p.wobble) * 0.8;
+    p.wobble += p.wobbleS;
+    p.rot += p.rotS;
+    rcCtx.save();
+    rcCtx.translate(p.x, p.y);
+    rcCtx.rotate(p.rot * Math.PI / 180);
+    rcCtx.fillStyle = p.color;
+    rcCtx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+    rcCtx.restore();
+    if (p.y > rouletteConfettiCanvas.height + 30) {
+      p.y = Math.random() * -60;
+      p.x = Math.random() * rouletteConfettiCanvas.width;
+    }
+  });
+  requestAnimationFrame(animateRouletteConfetti);
+}
+
+function stopRouletteConfetti() {
+  rcRunning = false;
+  rcCtx.clearRect(0, 0, rouletteConfettiCanvas.width, rouletteConfettiCanvas.height);
 }
 
 document.getElementById('btn-spin').addEventListener('click', startSpin);

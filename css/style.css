@@ -502,30 +502,135 @@ main {
   margin-bottom: 24px;
 }
 
-.roulette-result {
-  text-align: center;
-  min-height: 80px;
-  display: flex;
-  flex-direction: column;
+/* ── Roulette Result Popup ── */
+.roulette-popup-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(0,0,0,0.6);
   align-items: center;
   justify-content: center;
+  padding: 24px;
+}
+.roulette-popup-overlay.show {
+  display: flex;
+  animation: fadeIn 0.3s ease;
 }
 
-.roulette-result-card {
-  background: var(--glass);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius);
-  padding: 28px 36px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
-  animation: popIn 0.5s cubic-bezier(0.16,1,0.3,1);
-  max-width: 360px;
+.roulette-confetti-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
 }
 
-.roulette-result-card .result-emoji { font-size: 48px; margin-bottom: 12px; }
-.roulette-result-card .result-person { font-size: 28px; font-weight: 900; color: var(--mint-600); margin-bottom: 8px; }
-.roulette-result-card .result-mission { font-size: 16px; font-weight: 700; color: var(--gray-700); line-height: 1.6; }
+.roulette-popup-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  animation: resultBounce 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+
+@keyframes resultBounce {
+  0% { opacity: 0; transform: scale(0.3) translateY(40px); }
+  50% { transform: scale(1.08) translateY(-10px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.result-popup-card {
+  background: linear-gradient(145deg, #ffffff, #f0fdfa);
+  border: 3px solid var(--mint-300);
+  border-radius: 28px;
+  padding: 40px 44px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2), 0 0 40px rgba(20,184,166,0.15);
+  max-width: 380px;
+  position: relative;
+  overflow: hidden;
+}
+
+.result-popup-card::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, var(--mint-400), #f472b6, var(--mint-300), #a78bfa);
+  background-size: 300% 300%;
+  z-index: -1;
+  animation: shimmerBorder 2s ease infinite;
+}
+
+@keyframes shimmerBorder {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.result-popup-card .result-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gray-500);
+  margin-bottom: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.result-popup-card .result-emoji {
+  font-size: 64px;
+  margin-bottom: 16px;
+  animation: resultEmojiBounce 0.8s ease 0.3s both;
+}
+
+@keyframes resultEmojiBounce {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.3); }
+  70% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+.result-popup-card .result-person {
+  font-size: 36px;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--mint-600), var(--mint-400));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 10px;
+  animation: glowText 1.5s ease infinite alternate;
+}
+
+@keyframes glowText {
+  0% { filter: drop-shadow(0 0 4px rgba(20,184,166,0.3)); }
+  100% { filter: drop-shadow(0 0 12px rgba(20,184,166,0.6)); }
+}
+
+.result-popup-card .result-mission {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--gray-700);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.result-popup-close {
+  display: inline-block;
+  padding: 10px 32px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gray-500);
+  background: rgba(0,0,0,0.04);
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.result-popup-close:hover {
+  background: rgba(0,0,0,0.08);
+  color: var(--gray-700);
+}
 
 @media (max-width: 560px) {
   .roulette-container { width: 320px; height: 320px; }

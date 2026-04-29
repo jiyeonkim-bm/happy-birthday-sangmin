@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Chiron+GoRound+TC:wght@200..900&family=Nanum+Pen+Script&family=Gaegu&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=4">
+  <link rel="stylesheet" href="css/style.css?v=5">
 </head>
 <body>
 
@@ -103,7 +103,6 @@
         <div class="slot-reels" id="slot-reels"></div>
       </div>
       <button class="btn btn-mint roulette-spin-btn" id="btn-spin">돌려돌려!</button>
-      <div class="roulette-result" id="roulette-result"></div>
     </div>
   </section>
 
@@ -134,6 +133,12 @@
     </div>
   </section>
 </main>
+
+<!-- Roulette Result Popup -->
+<div class="roulette-popup-overlay" id="roulette-popup">
+  <canvas id="roulette-confetti" class="roulette-confetti-canvas"></canvas>
+  <div class="roulette-popup-content" id="roulette-popup-content"></div>
+</div>
 
 <!-- Rolling Paper Popup -->
 <div class="rolling-popup-overlay" id="rolling-popup">
@@ -187,7 +192,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
-<script src="js/app.js?v=4"></script>
+<script src="js/app.js?v=5"></script>
 
 </body>
 </html>
