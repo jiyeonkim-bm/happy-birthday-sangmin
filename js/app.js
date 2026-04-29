@@ -769,7 +769,6 @@ function startSpin() {
   var spinBtn = document.getElementById('btn-spin');
   spinBtn.disabled = true;
   spinBtn.textContent = '미션 추첨 중...';
-  document.getElementById('roulette-result').innerHTML = '';
   initSlotDisplay(3);
 
   var count = ROULETTE_MISSIONS.length;
