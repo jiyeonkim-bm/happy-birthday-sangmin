@@ -952,7 +952,11 @@ const DRAW_COLORS = ['#374151','#ef4444','#f97316','#eab308','#22c55e','#14b8a6'
       btn.classList.add('active');
       drawColor = btn.dataset.color;
       isEraser = false;
+      stickerMode = false;
+      selectedSticker = null;
       document.getElementById('btn-eraser').classList.remove('active');
+      document.getElementById('btn-sticker-toggle').classList.remove('active');
+      document.querySelectorAll('.sticker-btn').forEach(function(b) { b.classList.remove('active'); });
       drawCanvas.style.cursor = 'crosshair';
     });
   });
@@ -970,8 +974,61 @@ document.querySelectorAll('.draw-size-btn').forEach(function(btn) {
 // Eraser
 document.getElementById('btn-eraser').addEventListener('click', function() {
   isEraser = !isEraser;
+  stickerMode = false;
+  selectedSticker = null;
+  document.getElementById('btn-sticker-toggle').classList.remove('active');
+  document.querySelectorAll('.sticker-btn').forEach(function(b) { b.classList.remove('active'); });
   this.classList.toggle('active', isEraser);
   drawCanvas.style.cursor = isEraser ? 'grab' : 'crosshair';
+});
+
+// Stickers
+var STICKERS = [
+  'balloon1.png','balloon3.png','party_balloon.png','gift.png','confetti.png',
+  'ribbon.png','ribbon2.png','medal.png','trophy.png','sparkle2.png',
+  'sparkle3.png','pencil.png','megaphone.png','megaphone2.png'
+];
+var stickerMode = false;
+var selectedSticker = null;
+var stickerImages = {};
+
+// Preload sticker images
+STICKERS.forEach(function(name) {
+  var img = new Image();
+  img.src = 'img/stickers/' + name;
+  stickerImages[name] = img;
+});
+
+// Init sticker palette
+(function initStickerPalette() {
+  var palette = document.getElementById('sticker-palette');
+  palette.innerHTML = STICKERS.map(function(name) {
+    return '<button class="sticker-btn" data-sticker="' + name + '"><img src="img/stickers/' + name + '" alt="sticker"></button>';
+  }).join('');
+  palette.querySelectorAll('.sticker-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      palette.querySelectorAll('.sticker-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      selectedSticker = btn.dataset.sticker;
+      stickerMode = true;
+      isEraser = false;
+      document.getElementById('btn-eraser').classList.remove('active');
+      drawCanvas.style.cursor = 'copy';
+    });
+  });
+})();
+
+document.getElementById('btn-sticker-toggle').addEventListener('click', function() {
+  var palette = document.getElementById('sticker-palette');
+  var isOpen = palette.style.display !== 'none';
+  palette.style.display = isOpen ? 'none' : 'flex';
+  this.classList.toggle('active', !isOpen);
+  if (isOpen) {
+    stickerMode = false;
+    selectedSticker = null;
+    document.querySelectorAll('.sticker-btn').forEach(function(b) { b.classList.remove('active'); });
+    drawCanvas.style.cursor = 'crosshair';
+  }
 });
 
 // Clear
@@ -997,6 +1054,13 @@ function getDrawPos(e) {
 
 function startDraw(e) {
   e.preventDefault();
+  if (stickerMode && selectedSticker && stickerImages[selectedSticker]) {
+    var pos = getDrawPos(e);
+    var img = stickerImages[selectedSticker];
+    var size = 80;
+    dCtx.drawImage(img, pos.x - size / 2, pos.y - size / 2, size, size);
+    return;
+  }
   isDrawing = true;
   var pos = getDrawPos(e);
   dCtx.beginPath();
@@ -1034,7 +1098,12 @@ function openDrawModal() {
   dCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
   document.getElementById('draw-name').value = '';
   isEraser = false;
+  stickerMode = false;
+  selectedSticker = null;
   document.getElementById('btn-eraser').classList.remove('active');
+  document.getElementById('btn-sticker-toggle').classList.remove('active');
+  document.getElementById('sticker-palette').style.display = 'none';
+  document.querySelectorAll('.sticker-btn').forEach(function(b) { b.classList.remove('active'); });
   drawCanvas.style.cursor = 'crosshair';
   document.getElementById('draw-overlay').classList.add('show');
 }

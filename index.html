@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Chiron+GoRound+TC:wght@200..900&family=Nanum+Pen+Script&family=Gaegu&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=7">
+  <link rel="stylesheet" href="css/style.css?v=8">
 </head>
 <body>
 
@@ -195,8 +195,10 @@
         <button class="draw-size-btn" data-size="12">L</button>
       </div>
       <button class="draw-tool-btn" id="btn-eraser">지우개</button>
+      <button class="draw-tool-btn" id="btn-sticker-toggle">스티커</button>
       <button class="draw-tool-btn" id="btn-clear">전체삭제</button>
     </div>
+    <div class="sticker-palette" id="sticker-palette" style="display:none;"></div>
     <div class="write-field" style="margin-top:12px;">
       <label>이름</label>
       <input type="text" id="draw-name" placeholder="이름을 입력하세요" maxlength="20">
@@ -221,7 +223,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
-<script src="js/app.js?v=7"></script>
+<script src="js/app.js?v=8"></script>
 
 </body>
 </html>
