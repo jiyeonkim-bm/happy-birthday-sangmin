@@ -1475,11 +1475,13 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// Initial load
-(async function() {
-  await loadFirestoreMessages();
-  renderRollingPaper();
-})();
+// Initial render immediately with hardcoded messages
+renderRollingPaper();
+
+// Then load Firestore messages and re-render
+loadFirestoreMessages().then(() => {
+  if (firestoreMessages.length > 0) renderRollingPaper();
+});
 
 // ══════════════════════════════════════
 // Firebase Setup
