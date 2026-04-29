@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'WORK';
+  src: url('../font/WORKbeta2-03Bold.otf') format('opentype');
+  font-weight: 700;
+  font-display: swap;
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
@@ -87,6 +94,7 @@ nav {
 }
 
 .nav-logo {
+  font-family: 'WORK', 'Noto Sans KR', sans-serif;
   font-weight: 900;
   font-size: 18px;
   color: var(--mint-600);
@@ -99,7 +107,7 @@ nav {
   position: relative;
   background: none;
   border: none;
-  font-family: inherit;
+  font-family: 'WORK', 'Noto Sans KR', sans-serif;
   font-size: 14px;
   font-weight: 700;
   color: var(--gray-500);
@@ -145,7 +153,7 @@ main {
 
 /* ── Section Headers ── */
 .section-header { text-align: center; margin-bottom: 36px; }
-.section-header h2 { font-size: 26px; font-weight: 900; color: var(--gray-900); margin-bottom: 8px; letter-spacing: -0.5px; }
+.section-header h2 { font-family: 'WORK', 'Noto Sans KR', sans-serif; font-size: 26px; font-weight: 900; color: var(--gray-900); margin-bottom: 8px; letter-spacing: -0.5px; }
 .section-header p { font-size: 15px; color: var(--gray-500); line-height: 1.5; }
 
 /* ── Countdown Page ── */
@@ -170,7 +178,7 @@ main {
   50% { transform: translateY(-16px); }
 }
 
-.countdown-title { font-size: 32px; font-weight: 900; color: var(--gray-900); margin-bottom: 8px; letter-spacing: -1px; }
+.countdown-title { font-family: 'WORK', 'Noto Sans KR', sans-serif; font-size: 32px; font-weight: 900; color: var(--gray-900); margin-bottom: 8px; letter-spacing: -1px; }
 .countdown-subtitle { font-size: 16px; color: var(--gray-500); margin-bottom: 48px; }
 .countdown-boxes { display: flex; gap: 14px; margin-bottom: 48px; }
 
@@ -187,12 +195,12 @@ main {
 }
 
 .countdown-box:hover { transform: translateY(-4px); }
-.countdown-box .number { font-size: 44px; font-weight: 900; background: linear-gradient(135deg, var(--mint-600), var(--mint-400)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1; letter-spacing: -2px; }
+.countdown-box .number { font-family: 'WORK', 'Noto Sans KR', sans-serif; font-size: 44px; font-weight: 900; background: linear-gradient(135deg, var(--mint-600), var(--mint-400)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1; letter-spacing: -2px; }
 .countdown-box .label { font-size: 11px; font-weight: 700; color: var(--gray-500); margin-top: 10px; text-transform: uppercase; letter-spacing: 2px; }
-.countdown-dday { font-size: 18px; font-weight: 900; color: var(--white); background: linear-gradient(135deg, var(--mint-500), var(--mint-400)); padding: 12px 32px; border-radius: 100px; box-shadow: 0 6px 20px rgba(20,184,166,0.3); }
+.countdown-dday { font-family: 'WORK', 'Noto Sans KR', sans-serif; font-size: 18px; font-weight: 900; color: var(--white); background: linear-gradient(135deg, var(--mint-500), var(--mint-400)); padding: 12px 32px; border-radius: 100px; box-shadow: 0 6px 20px rgba(20,184,166,0.3); }
 
 /* Birthday mode */
-.birthday-mode .countdown-title { font-size: 40px; background: linear-gradient(135deg, var(--mint-500), #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: pulse 1.5s ease infinite; }
+.birthday-mode .countdown-title { font-family: 'WORK', 'Noto Sans KR', sans-serif; font-size: 40px; background: linear-gradient(135deg, var(--mint-500), #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: pulse 1.5s ease infinite; }
 @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 .birthday-msg { font-size: 20px; font-weight: 700; color: var(--gray-700); margin-top: 20px; line-height: 1.7; }
 
@@ -346,7 +354,7 @@ main {
 .write-actions { display: flex; gap: 10px; justify-content: center; margin-top: 8px; }
 
 /* ── Buttons ── */
-.btn { font-family: inherit; font-size: 15px; font-weight: 700; border: none; cursor: pointer; border-radius: 100px; transition: all 0.3s cubic-bezier(0.16,1,0.3,1); }
+.btn { font-family: 'WORK', 'Noto Sans KR', sans-serif; font-size: 15px; font-weight: 700; border: none; cursor: pointer; border-radius: 100px; transition: all 0.3s cubic-bezier(0.16,1,0.3,1); }
 .btn-mint { background: linear-gradient(135deg, var(--mint-500), var(--mint-400)); color: var(--white); padding: 14px 32px; box-shadow: 0 6px 20px rgba(20,184,166,0.3); }
 .btn-mint:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(20,184,166,0.4); }
 .btn-outline { background: var(--glass); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color: var(--mint-600); padding: 12px 28px; border: 2px solid var(--mint-200); }
@@ -691,6 +699,7 @@ main {
 }
 
 .result-popup-card .result-person {
+  font-family: 'WORK', 'Noto Sans KR', sans-serif;
   font-size: 36px;
   font-weight: 900;
   background: linear-gradient(135deg, var(--mint-600), var(--mint-400));
