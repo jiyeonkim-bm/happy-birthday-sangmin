@@ -1085,7 +1085,9 @@ function shuffle(arr) {
 
 function renderRollingPaper() {
   const grid = document.getElementById('rolling-grid');
-  const shuffled = shuffle(rollingMessages).slice(0, 12);
+  const pinned = rollingMessages.filter(m => m.from);
+  const rest = shuffle(rollingMessages.filter(m => !m.from)).slice(0, 12 - pinned.length);
+  const shuffled = [...pinned, ...rest];
   grid.innerHTML = shuffled.map((m, i) => `
     <div class="rolling-card ${colorClasses[i % colorClasses.length]}">
       <div class="card-emoji">${m.emoji}</div>
