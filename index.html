@@ -302,33 +302,36 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 0;
-      padding: 20px 10px;
+      padding: 20px 6px;
+    }
+
+    /* ── Paper texture (shared) ── */
+    .paper-texture {
+      background-image:
+        url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
     }
 
     .rolling-card {
-      background: #fffef2;
-      border: none;
-      border-radius: 4px;
-      padding: 28px 20px 20px;
       position: relative;
+      padding: 24px 18px 18px;
       overflow: visible;
       cursor: pointer;
-      transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s ease, z-index 0s;
+      transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s ease;
       animation: popIn 0.4s cubic-bezier(0.16,1,0.3,1) backwards;
-      box-shadow: 2px 3px 12px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
-      margin: -8px -4px;
+      box-shadow: 2px 4px 14px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.06);
+      margin: -6px -3px;
       z-index: 1;
-      min-height: 160px;
+      border: none;
     }
 
     .rolling-card::after { content: none; }
     .rolling-card::before { content: none; }
 
     .rolling-card .card-from {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
       color: var(--mint-600);
-      margin-top: 14px;
+      margin-top: 12px;
       text-align: right;
     }
 
@@ -357,148 +360,142 @@
 
     /* ── Color variants ── */
     .rolling-card.color-1 { background-color: #fffef2; }
-    .rolling-card.color-2 { background-color: #fff5ee; }
+    .rolling-card.color-2 { background-color: #fff0ee; }
     .rolling-card.color-3 { background-color: #fff0f5; }
-    .rolling-card.color-4 { background-color: #f5f0ff; }
-    .rolling-card.color-5 { background-color: #f0f7ff; }
-    .rolling-card.color-6 { background-color: #f0fff5; }
+    .rolling-card.color-4 { background-color: #f3f0ff; }
+    .rolling-card.color-5 { background-color: #eef5ff; }
+    .rolling-card.color-6 { background-color: #eefff5; }
+    .rolling-card.color-7 { background-color: #fef9c3; }
+    .rolling-card.color-8 { background-color: #fce7f3; }
 
-    /* ── Style: tape (마스킹테이프) ── */
-    .rolling-card.style-tape {
-      border-radius: 2px;
-      background-image: repeating-linear-gradient(transparent, transparent 27px, rgba(0,0,0,0.06) 27px, rgba(0,0,0,0.06) 28px);
-      background-position: 0 24px;
-      padding-top: 32px;
+    /* ── Shape: square (네모 메모지) ── */
+    .rolling-card.shape-square {
+      border-radius: 4px;
     }
-    .rolling-card.style-tape::after {
+    .rolling-card.shape-square::after {
       content: '';
       position: absolute;
       top: -6px;
       left: 50%;
       transform: translateX(-50%) rotate(-2deg);
-      width: 54px;
-      height: 20px;
+      width: 50px;
+      height: 18px;
       border-radius: 2px;
-      z-index: 2;
-      opacity: 0.7;
+      opacity: 0.6;
     }
-    .rolling-card.style-tape.color-1::after { background: #99f6e4; }
-    .rolling-card.style-tape.color-2::after { background: #fdba74; }
-    .rolling-card.style-tape.color-3::after { background: #f9a8d4; }
-    .rolling-card.style-tape.color-4::after { background: #c4b5fd; }
-    .rolling-card.style-tape.color-5::after { background: #93c5fd; }
-    .rolling-card.style-tape.color-6::after { background: #fde68a; }
+    .rolling-card.shape-square.color-1::after { background: #99f6e4; }
+    .rolling-card.shape-square.color-2::after { background: #fdba74; }
+    .rolling-card.shape-square.color-3::after { background: #f9a8d4; }
+    .rolling-card.shape-square.color-4::after { background: #c4b5fd; }
+    .rolling-card.shape-square.color-5::after { background: #93c5fd; }
+    .rolling-card.shape-square.color-6::after { background: #86efac; }
+    .rolling-card.shape-square.color-7::after { background: #fde68a; }
+    .rolling-card.shape-square.color-8::after { background: #f9a8d4; }
 
-    /* ── Style: pin (압정) ── */
-    .rolling-card.style-pin {
-      border-radius: 3px;
-      padding-top: 30px;
+    /* ── Shape: circle (동그라미) ── */
+    .rolling-card.shape-circle {
+      border-radius: 50%;
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 30px 24px;
     }
-    .rolling-card.style-pin::after {
+
+    /* ── Shape: heart (하트) ── */
+    .rolling-card.shape-heart {
+      clip-path: path('M 110 28 C 110 -4 160 -4 160 28 C 160 68 110 105 110 95 C 110 105 60 68 60 28 C 60 -4 110 -4 110 28');
+      width: 220px;
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 50px 40px 40px;
+      justify-self: center;
+    }
+
+    /* ── Shape: star (별) ── */
+    .rolling-card.shape-star {
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 50px 44px 44px;
+      justify-self: center;
+    }
+
+    /* ── Shape: cloud (구름) ── */
+    .rolling-card.shape-cloud {
+      border-radius: 42% 58% 55% 45% / 48% 40% 60% 52%;
+      padding: 32px 26px;
+      text-align: center;
+    }
+
+    /* ── Shape: flower (꽃잎) ── */
+    .rolling-card.shape-flower {
+      border-radius: 60% 10% 60% 10%;
+      padding: 28px 24px;
+    }
+
+    /* ── Shape: rounded-rect (둥근 사각) ── */
+    .rolling-card.shape-rounded {
+      border-radius: 24px;
+      padding: 26px 22px;
+    }
+    .rolling-card.shape-rounded::after {
       content: '';
       position: absolute;
-      top: 6px;
+      top: 8px;
       left: 50%;
       transform: translateX(-50%);
-      width: 14px;
-      height: 14px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
-      z-index: 2;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2), inset 0 -1px 2px rgba(0,0,0,0.15);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(0,0,0,0.1);
     }
-    .rolling-card.style-pin.color-1::after { background: radial-gradient(circle at 40% 35%, #5eead4, #0d9488); }
-    .rolling-card.style-pin.color-2::after { background: radial-gradient(circle at 40% 35%, #fb923c, #c2410c); }
-    .rolling-card.style-pin.color-3::after { background: radial-gradient(circle at 40% 35%, #f472b6, #be185d); }
-    .rolling-card.style-pin.color-4::after { background: radial-gradient(circle at 40% 35%, #a78bfa, #6d28d9); }
-    .rolling-card.style-pin.color-5::after { background: radial-gradient(circle at 40% 35%, #60a5fa, #1d4ed8); }
-    .rolling-card.style-pin.color-6::after { background: radial-gradient(circle at 40% 35%, #facc15, #a16207); }
+    .rolling-card.shape-rounded.color-1::after { background: radial-gradient(circle at 40% 35%, #5eead4, #0d9488); }
+    .rolling-card.shape-rounded.color-2::after { background: radial-gradient(circle at 40% 35%, #fb923c, #c2410c); }
+    .rolling-card.shape-rounded.color-3::after { background: radial-gradient(circle at 40% 35%, #f472b6, #be185d); }
+    .rolling-card.shape-rounded.color-4::after { background: radial-gradient(circle at 40% 35%, #a78bfa, #6d28d9); }
+    .rolling-card.shape-rounded.color-5::after { background: radial-gradient(circle at 40% 35%, #60a5fa, #1d4ed8); }
+    .rolling-card.shape-rounded.color-6::after { background: radial-gradient(circle at 40% 35%, #34d399, #065f46); }
+    .rolling-card.shape-rounded.color-7::after { background: radial-gradient(circle at 40% 35%, #facc15, #a16207); }
+    .rolling-card.shape-rounded.color-8::after { background: radial-gradient(circle at 40% 35%, #f472b6, #be185d); }
 
-    /* ── Style: sticky (포스트잇) ── */
-    .rolling-card.style-sticky {
-      border-radius: 2px;
-      background-image: none;
-      box-shadow: 2px 3px 8px rgba(0,0,0,0.1);
-      padding-top: 22px;
+    /* ── Shape: hexagon ── */
+    .rolling-card.shape-hexagon {
+      clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 36px 40px;
+      justify-self: center;
     }
-    .rolling-card.style-sticky::before {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      width: 28px;
-      height: 28px;
-      background: linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.06) 50%, rgba(0,0,0,0.03) 100%);
-      border-radius: 0 0 0 0;
-    }
-    .rolling-card.style-sticky.color-1 { background-color: #fef9c3; }
-    .rolling-card.style-sticky.color-2 { background-color: #ffe4c9; }
-    .rolling-card.style-sticky.color-3 { background-color: #fce7f3; }
-    .rolling-card.style-sticky.color-4 { background-color: #ede9fe; }
-    .rolling-card.style-sticky.color-5 { background-color: #dbeafe; }
-    .rolling-card.style-sticky.color-6 { background-color: #d1fae5; }
-
-    /* ── Style: clip (클립) ── */
-    .rolling-card.style-clip {
-      border-radius: 4px;
-      background-image: repeating-linear-gradient(transparent, transparent 27px, rgba(0,0,0,0.05) 27px, rgba(0,0,0,0.05) 28px);
-      background-position: 0 24px;
-      padding-top: 26px;
-    }
-    .rolling-card.style-clip::after {
-      content: '';
-      position: absolute;
-      top: -8px;
-      right: 16px;
-      width: 18px;
-      height: 32px;
-      border: 3px solid #aaa;
-      border-radius: 8px 8px 0 0;
-      background: transparent;
-      z-index: 2;
-    }
-    .rolling-card.style-clip.color-1::after { border-color: #5eead4; }
-    .rolling-card.style-clip.color-2::after { border-color: #fb923c; }
-    .rolling-card.style-clip.color-3::after { border-color: #f472b6; }
-    .rolling-card.style-clip.color-4::after { border-color: #a78bfa; }
-    .rolling-card.style-clip.color-5::after { border-color: #60a5fa; }
-    .rolling-card.style-clip.color-6::after { border-color: #facc15; }
-
-    /* ── Style: fold (접힌 모서리) ── */
-    .rolling-card.style-fold {
-      border-radius: 0 20px 0 0;
-      background-image: none;
-      padding-top: 22px;
-      overflow: hidden;
-    }
-    .rolling-card.style-fold::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 28px;
-      height: 28px;
-      z-index: 2;
-    }
-    .rolling-card.style-fold.color-1::after { background: linear-gradient(225deg, #f5f5dc 45%, rgba(0,0,0,0.08) 45%, rgba(0,0,0,0.08) 50%, #fffef2 50%); }
-    .rolling-card.style-fold.color-2::after { background: linear-gradient(225deg, #f5e6d8 45%, rgba(0,0,0,0.08) 45%, rgba(0,0,0,0.08) 50%, #fff5ee 50%); }
-    .rolling-card.style-fold.color-3::after { background: linear-gradient(225deg, #f5dce6 45%, rgba(0,0,0,0.08) 45%, rgba(0,0,0,0.08) 50%, #fff0f5 50%); }
-    .rolling-card.style-fold.color-4::after { background: linear-gradient(225deg, #e2d8f5 45%, rgba(0,0,0,0.08) 45%, rgba(0,0,0,0.08) 50%, #f5f0ff 50%); }
-    .rolling-card.style-fold.color-5::after { background: linear-gradient(225deg, #d0e0f5 45%, rgba(0,0,0,0.08) 45%, rgba(0,0,0,0.08) 50%, #f0f7ff 50%); }
-    .rolling-card.style-fold.color-6::after { background: linear-gradient(225deg, #d8f5e0 45%, rgba(0,0,0,0.08) 45%, rgba(0,0,0,0.08) 50%, #f0fff5 50%); }
 
     .rolling-card .card-emoji {
-      font-size: 28px;
-      margin-bottom: 10px;
+      font-size: 26px;
+      margin-bottom: 8px;
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+      flex-shrink: 0;
     }
 
     .rolling-card .card-msg {
-      font-size: 13px;
-      line-height: 1.7;
+      font-size: 12px;
+      line-height: 1.65;
       color: var(--gray-700);
       word-break: keep-all;
       display: -webkit-box;
-      -webkit-line-clamp: 5;
+      -webkit-line-clamp: 4;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
@@ -515,26 +512,28 @@
       position: fixed;
       inset: 0;
       z-index: 200;
-      background: rgba(0,0,0,0.45);
+      background: rgba(0,0,0,0.4);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 24px;
     }
     .rolling-popup-overlay.show {
       display: flex;
-      animation: fadeIn 0.3s ease;
+      animation: fadeIn 0.25s ease;
+    }
+    .rolling-popup-inner {
+      position: relative;
+      max-width: 460px;
+      width: 100%;
+      animation: popIn 0.35s cubic-bezier(0.16,1,0.3,1);
     }
     .rolling-popup-card {
       position: relative;
-      max-width: 440px;
-      width: 100%;
-      padding: 36px 30px 30px;
-      border-radius: 6px;
-      box-shadow: 0 25px 60px rgba(0,0,0,0.25);
-      animation: popIn 0.35s cubic-bezier(0.16,1,0.3,1);
-      max-height: 80vh;
+      padding: 40px 32px 32px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.22);
+      max-height: 78vh;
       overflow-y: auto;
     }
     .rolling-popup-card .card-emoji {
@@ -546,6 +545,7 @@
       line-height: 1.9;
       color: var(--gray-700);
       word-break: keep-all;
+      display: block;
       -webkit-line-clamp: unset;
       overflow: visible;
     }
@@ -558,19 +558,25 @@
     }
     .rolling-popup-close {
       position: absolute;
-      top: 10px;
-      right: 14px;
-      background: none;
+      top: 12px;
+      right: 16px;
+      background: rgba(255,255,255,0.7);
       border: none;
-      font-size: 22px;
+      font-size: 20px;
       color: var(--gray-500);
       cursor: pointer;
-      padding: 4px 8px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       transition: background 0.2s;
+      z-index: 5;
     }
     .rolling-popup-close:hover {
-      background: rgba(0,0,0,0.06);
+      background: rgba(255,255,255,0.95);
+      color: var(--gray-900);
     }
 
     /* ── Buttons ── */
@@ -898,6 +904,7 @@
       .countdown-box .number { font-size: 34px; }
       .countdown-title { font-size: 26px; }
       .rolling-grid { grid-template-columns: 1fr 1fr; }
+      .rolling-card.shape-heart { width: 180px; min-height: 165px; padding: 44px 34px 34px; }
       .gallery-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
     }
 
@@ -1012,11 +1019,13 @@
 
 <!-- Rolling Paper Popup -->
 <div class="rolling-popup-overlay" id="rolling-popup">
-  <div class="rolling-popup-card" id="rolling-popup-card">
+  <div class="rolling-popup-inner">
     <button class="rolling-popup-close" id="rolling-popup-close">&times;</button>
-    <div class="card-emoji" id="rolling-popup-emoji"></div>
-    <div class="card-msg" id="rolling-popup-msg"></div>
-    <div class="card-from" id="rolling-popup-from"></div>
+    <div class="rolling-popup-card paper-texture" id="rolling-popup-card">
+      <div class="card-emoji" id="rolling-popup-emoji"></div>
+      <div class="card-msg" id="rolling-popup-msg"></div>
+      <div class="card-from" id="rolling-popup-from"></div>
+    </div>
   </div>
 </div>
 
@@ -1251,8 +1260,8 @@ const rollingMessages = [
   { emoji: '🦋', msg: '상민아 생일 축하!! 나비처럼 자유롭고 아름다운 한 해 보내~!' },
 ];
 
-const colorClasses = ['color-1','color-2','color-3','color-4','color-5','color-6'];
-const styleClasses = ['style-tape','style-pin','style-sticky','style-clip','style-fold'];
+const colorClasses = ['color-1','color-2','color-3','color-4','color-5','color-6','color-7','color-8'];
+const shapeClasses = ['shape-square','shape-circle','shape-rounded','shape-cloud','shape-flower','shape-hexagon','shape-heart','shape-star'];
 const rotations = [-3, -1.5, 0.5, 2, -2, 1, -0.5, 2.5, -1, 1.5, -2.5, 3];
 
 function shuffle(arr) {
@@ -1271,12 +1280,13 @@ function renderRollingPaper() {
   const pinned = rollingMessages.filter(m => m.from);
   const rest = shuffle(rollingMessages.filter(m => !m.from)).slice(0, 12 - pinned.length);
   currentCards = [...pinned, ...rest];
+  const shuffledShapes = shuffle([...shapeClasses]);
   grid.innerHTML = currentCards.map((m, i) => {
     const color = colorClasses[i % colorClasses.length];
-    const style = styleClasses[i % styleClasses.length];
+    const shape = shuffledShapes[i % shuffledShapes.length];
     const rot = rotations[i % rotations.length];
     return `
-    <div class="rolling-card ${color} ${style}" style="transform:rotate(${rot}deg)" data-idx="${i}">
+    <div class="rolling-card paper-texture ${color} ${shape}" style="transform:rotate(${rot}deg)" data-idx="${i}">
       <div class="card-emoji">${m.emoji}</div>
       <div class="card-msg">${m.msg}</div>
       ${m.from ? `<div class="card-from">- ${m.from}</div>` : ''}
@@ -1286,12 +1296,12 @@ function renderRollingPaper() {
   grid.querySelectorAll('.rolling-card').forEach(card => {
     card.addEventListener('click', () => {
       const idx = parseInt(card.dataset.idx);
-      openRollingPopup(currentCards[idx], card.className);
+      openRollingPopup(currentCards[idx], card);
     });
   });
 }
 
-function openRollingPopup(m, cardClass) {
+function openRollingPopup(m, cardEl) {
   const overlay = document.getElementById('rolling-popup');
   const popupCard = document.getElementById('rolling-popup-card');
   document.getElementById('rolling-popup-emoji').textContent = m.emoji;
@@ -1299,10 +1309,19 @@ function openRollingPopup(m, cardClass) {
   const fromEl = document.getElementById('rolling-popup-from');
   fromEl.textContent = m.from ? `- ${m.from}` : '';
   fromEl.style.display = m.from ? 'block' : 'none';
-  // Apply same color to popup
-  popupCard.className = 'rolling-popup-card';
-  const colorMatch = cardClass.match(/color-\d/);
+
+  // Copy shape + color from the clicked card
+  const colorMatch = cardEl.className.match(/color-\d/);
+  const shapeMatch = cardEl.className.match(/shape-\w+/);
+  popupCard.className = 'rolling-popup-card paper-texture';
   if (colorMatch) popupCard.classList.add(colorMatch[0]);
+  // For popup, use rounded-rect for shapes that clip text (heart, star, hexagon)
+  const clippedShapes = ['shape-heart','shape-star','shape-hexagon'];
+  if (shapeMatch && !clippedShapes.includes(shapeMatch[0])) {
+    popupCard.classList.add(shapeMatch[0]);
+  } else {
+    popupCard.classList.add('shape-rounded');
+  }
   overlay.classList.add('show');
 }
 
