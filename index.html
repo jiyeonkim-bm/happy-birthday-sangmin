@@ -6,7 +6,7 @@
   <title>상민님 생일 축하해요!</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Chiron+GoRound+TC:wght@200..900&family=Nanum+Pen+Script&family=Gaegu&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -1355,6 +1355,7 @@ async function deletePhotoFirebase(id) {
 // Rolling Paper
 // ══════════════════════════════════════
 const colorClasses = ['color-1','color-2','color-3','color-4','color-5','color-6'];
+const cardFonts = ["'Chiron GoRound TC', sans-serif", "'Nanum Pen Script', cursive", "'Gaegu', cursive"];
 
 function shuffle(arr) {
   const a = [...arr];
@@ -1386,14 +1387,12 @@ let currentCards = [];
 
 function renderRollingPaper() {
   const grid = document.getElementById('rolling-grid');
-  const allMessages = firestoreMessages;
-  const pinned = allMessages.filter(m => m.from);
-  const rest = shuffle(allMessages.filter(m => !m.from)).slice(0, Math.max(0, 12 - pinned.length));
-  currentCards = [...pinned, ...rest];
+  currentCards = shuffle([...firestoreMessages]);
   grid.innerHTML = currentCards.map((m, i) => {
     const color = colorClasses[i % colorClasses.length];
+    const font = cardFonts[Math.floor(Math.random() * cardFonts.length)];
     return `
-    <div class="rolling-card ${color}" data-idx="${i}">
+    <div class="rolling-card ${color}" data-idx="${i}" style="font-family:${font}">
       <div class="card-emoji">${m.emoji}</div>
       <div class="card-msg">${m.msg}</div>
       ${m.from ? `<div class="card-from">- ${m.from}</div>` : ''}
