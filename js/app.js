@@ -627,15 +627,15 @@ const ROULETTE_PEOPLE = [
 ];
 
 const ROULETTE_MISSIONS = [
-  { emoji: '☕', text: '상민님에게 커피 쏘기' },
-  { emoji: '🍽️', text: '상민님 점심 사주기' },
-  { emoji: '🍰', text: '상민님에게 케이크 or 디저트 선물하기' },
-  { emoji: '🫶', text: '상민님에게 칭찬 5번 해주기' },
-  { emoji: '🏃', text: '상민님이 시키는 심부름 1회 무조건 수행' },
-  { emoji: '🥤', text: '상민님에게 오늘 음료 배달하기' },
-  { emoji: '🍜', text: '상민님이 먹고 싶은 거 배달 시켜주기' },
-  { emoji: '🍫', text: '상민님 간식 바구니 채워주기' },
-  { emoji: '🎂', text: '상민님에게 생일 편의점 케이크 사주기' },
+  { emoji: '☕', label: '커피', text: '상민님에게 커피 쏘기' },
+  { emoji: '🍽️', label: '점심', text: '상민님 점심 사주기' },
+  { emoji: '🍰', label: '디저트', text: '상민님에게 케이크 or 디저트 선물하기' },
+  { emoji: '🫶', label: '칭찬', text: '상민님에게 칭찬 5번 해주기' },
+  { emoji: '🏃', label: '심부름', text: '상민님이 시키는 심부름 1회 무조건 수행' },
+  { emoji: '🥤', label: '음료', text: '상민님에게 오늘 음료 배달하기' },
+  { emoji: '🍜', label: '배달', text: '상민님이 먹고 싶은 거 배달 시켜주기' },
+  { emoji: '🍫', label: '간식', text: '상민님 간식 바구니 채워주기' },
+  { emoji: '🎂', label: '케이크', text: '상민님에게 생일 편의점 케이크 사주기' },
 ];
 
 const ROULETTE_COLORS = [
@@ -677,10 +677,13 @@ function drawRoulette(angle) {
     rCtx.save();
     rCtx.translate(cx, cy);
     rCtx.rotate(startAngle + arc / 2);
-    rCtx.font = '20px sans-serif';
+    rCtx.font = '18px sans-serif';
     rCtx.textAlign = 'center';
     rCtx.textBaseline = 'middle';
-    rCtx.fillText(m.emoji, r * 0.68, 0);
+    rCtx.fillText(m.emoji, r * 0.55, -7);
+    rCtx.font = 'bold 11px "Noto Sans KR", sans-serif';
+    rCtx.fillStyle = '#374151';
+    rCtx.fillText(m.label, r * 0.55, 9);
     rCtx.restore();
   });
 
