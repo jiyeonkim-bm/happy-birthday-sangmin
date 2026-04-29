@@ -705,41 +705,62 @@ function drawRoulette(angle) {
   rCtx.fillText('MISSION', cx, cy);
 }
 
-// ── Slot machine ──
-const slotReel = document.getElementById('slot-reel');
-const ITEM_HEIGHT = 52;
+// ── Slot machine (per-character reels) ──
+const slotReelsContainer = document.getElementById('slot-reels');
+const CHAR_HEIGHT = 56;
+const HANGUL_CHARS = '가나다라마바사아자차카타파하거너더러머버서어저커터퍼허고노도로모보소오조코토포호구누두루무부수우주쿠투푸후';
 
-function initSlot() {
-  slotReel.innerHTML = ROULETTE_PEOPLE.map(name =>
-    `<div class="slot-item">${name}</div>`
-  ).join('');
-  slotReel.style.transform = 'translateY(0px)';
+function initSlotDisplay(charCount) {
+  let html = '';
+  for (let i = 0; i < charCount; i++) {
+    html += `<div class="slot-col" id="slot-col-${i}">
+      <div class="slot-col-reel" id="slot-reel-${i}">
+        <div class="slot-char">?</div>
+      </div>
+    </div>`;
+  }
+  slotReelsContainer.innerHTML = html;
 }
 
-function spinSlot(targetIndex) {
+function spinSlotReels(targetName) {
   return new Promise(resolve => {
-    // Build a long reel: repeat names many times + end on target
-    const repeats = 6;
-    const totalItems = ROULETTE_PEOPLE.length * repeats + targetIndex + 1;
-    let html = '';
-    for (let i = 0; i < totalItems; i++) {
-      const name = ROULETTE_PEOPLE[i % ROULETTE_PEOPLE.length];
-      html += `<div class="slot-item">${name}</div>`;
-    }
-    slotReel.innerHTML = html;
-    slotReel.style.transition = 'none';
-    slotReel.style.transform = 'translateY(0px)';
+    const chars = targetName.split('');
+    const charCount = chars.length;
+    initSlotDisplay(charCount);
 
-    // force reflow
-    slotReel.offsetHeight;
+    let stoppedCount = 0;
 
-    const targetY = -(totalItems - 1) * ITEM_HEIGHT;
-    slotReel.style.transition = `transform 3s cubic-bezier(0.15, 0.85, 0.35, 1)`;
-    slotReel.style.transform = `translateY(${targetY}px)`;
+    chars.forEach((targetChar, colIdx) => {
+      const reel = document.getElementById(`slot-reel-${colIdx}`);
+      const col = document.getElementById(`slot-col-${colIdx}`);
 
-    setTimeout(() => {
-      resolve();
-    }, 3200);
+      // Build reel: random chars then target char at end
+      const randomCount = 20 + colIdx * 8;
+      let html = '';
+      for (let j = 0; j < randomCount; j++) {
+        const rc = HANGUL_CHARS[Math.floor(Math.random() * HANGUL_CHARS.length)];
+        html += `<div class="slot-char">${rc}</div>`;
+      }
+      html += `<div class="slot-char">${targetChar}</div>`;
+      reel.innerHTML = html;
+
+      reel.style.transition = 'none';
+      reel.style.transform = 'translateY(0px)';
+      reel.offsetHeight;
+
+      const targetY = -randomCount * CHAR_HEIGHT;
+      const duration = 1.2 + colIdx * 0.6;
+      reel.style.transition = `transform ${duration}s cubic-bezier(0.12, 0.8, 0.3, 1)`;
+      reel.style.transform = `translateY(${targetY}px)`;
+
+      setTimeout(() => {
+        col.classList.add('stopped');
+        stoppedCount++;
+        if (stoppedCount === charCount) {
+          setTimeout(resolve, 300);
+        }
+      }, duration * 1000);
+    });
   });
 }
 
@@ -750,7 +771,7 @@ function startSpin() {
   document.getElementById('btn-spin').disabled = true;
   document.getElementById('btn-spin').textContent = '미션 추첨 중...';
   document.getElementById('roulette-result').innerHTML = '';
-  initSlot();
+  initSlotDisplay(3);
 
   const count = ROULETTE_MISSIONS.length;
   const arc = (Math.PI * 2) / count;
@@ -778,7 +799,8 @@ function startSpin() {
       rouletteAngle = currentAngle % (Math.PI * 2);
       // Roulette done → start slot machine
       document.getElementById('btn-spin').textContent = '당첨자 추첨 중...';
-      spinSlot(personIndex).then(() => {
+      const targetName = ROULETTE_PEOPLE[personIndex];
+      spinSlotReels(targetName).then(() => {
         isAnimating = false;
         document.getElementById('btn-spin').disabled = false;
         document.getElementById('btn-spin').textContent = '다시 돌리기!';
@@ -804,4 +826,4 @@ function showResult(missionIndex, personIndex) {
 
 document.getElementById('btn-spin').addEventListener('click', startSpin);
 drawRoulette(0);
-initSlot();
+initSlotDisplay(3);
