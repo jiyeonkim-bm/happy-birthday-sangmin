@@ -630,7 +630,7 @@ const ROULETTE_MISSIONS = [
   { emoji: '☕', text: '상민님에게 커피 쏘기' },
   { emoji: '🍽️', text: '상민님 점심 사주기' },
   { emoji: '🍰', text: '상민님에게 케이크 or 디저트 선물하기' },
-  { emoji: '📸', text: '상민님과 인생네컷 찍으러 가기' },
+  { emoji: '🫶', text: '상민님에게 칭찬 5번 해주기' },
   { emoji: '🏃', text: '상민님이 시키는 심부름 1회 무조건 수행' },
   { emoji: '🥤', text: '상민님에게 오늘 음료 배달하기' },
   { emoji: '🍜', text: '상민님이 먹고 싶은 거 배달 시켜주기' },
