@@ -305,16 +305,40 @@
     }
 
     .rolling-card {
-      background: var(--glass);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--glass-border);
-      border-radius: var(--radius);
-      padding: 28px 22px;
+      background: #fffef2;
+      border: none;
+      border-radius: 4px;
+      padding: 28px 22px 22px;
       position: relative;
       overflow: hidden;
       transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s ease;
       animation: popIn 0.4s cubic-bezier(0.16,1,0.3,1) backwards;
+      box-shadow: 2px 3px 12px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+      background-image: repeating-linear-gradient(
+        transparent, transparent 27px, #e8e4d4 27px, #e8e4d4 28px
+      );
+      background-position: 0 24px;
+    }
+
+    .rolling-card::after {
+      content: '';
+      position: absolute;
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 20px;
+      background: rgba(20, 184, 166, 0.35);
+      border-radius: 2px;
+      z-index: 2;
+    }
+
+    .rolling-card .card-from {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--mint-600);
+      margin-top: 14px;
+      text-align: right;
     }
 
     .rolling-card:nth-child(1) { animation-delay: 0.05s; }
@@ -336,26 +360,33 @@
     }
 
     .rolling-card:hover {
-      transform: translateY(-6px) rotate(-1deg);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      transform: translateY(-6px) rotate(-2deg);
+      box-shadow: 4px 6px 20px rgba(0,0,0,0.15);
     }
 
-    .rolling-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 5px;
-      border-radius: var(--radius) var(--radius) 0 0;
-    }
+    .rolling-card.color-1 { background-color: #fffef2; }
+    .rolling-card.color-2 { background-color: #fff5ee; }
+    .rolling-card.color-3 { background-color: #fff0f5; }
+    .rolling-card.color-4 { background-color: #f5f0ff; }
+    .rolling-card.color-5 { background-color: #f0f7ff; }
+    .rolling-card.color-6 { background-color: #f0fff5; }
 
-    .rolling-card.color-1::before { background: linear-gradient(90deg, var(--mint-400), var(--mint-300)); }
-    .rolling-card.color-2::before { background: linear-gradient(90deg, #fb923c, #fdba74); }
-    .rolling-card.color-3::before { background: linear-gradient(90deg, #f472b6, #f9a8d4); }
-    .rolling-card.color-4::before { background: linear-gradient(90deg, #a78bfa, #c4b5fd); }
-    .rolling-card.color-5::before { background: linear-gradient(90deg, #60a5fa, #93c5fd); }
-    .rolling-card.color-6::before { background: linear-gradient(90deg, #facc15, #fde68a); }
+    .rolling-card.color-1 { background-image: repeating-linear-gradient(transparent, transparent 27px, #e8e4d4 27px, #e8e4d4 28px); }
+    .rolling-card.color-2 { background-image: repeating-linear-gradient(transparent, transparent 27px, #e8ddd4 27px, #e8ddd4 28px); }
+    .rolling-card.color-3 { background-image: repeating-linear-gradient(transparent, transparent 27px, #e8d4dc 27px, #e8d4dc 28px); }
+    .rolling-card.color-4 { background-image: repeating-linear-gradient(transparent, transparent 27px, #ddd4e8 27px, #ddd4e8 28px); }
+    .rolling-card.color-5 { background-image: repeating-linear-gradient(transparent, transparent 27px, #d4dde8 27px, #d4dde8 28px); }
+    .rolling-card.color-6 { background-image: repeating-linear-gradient(transparent, transparent 27px, #d4e8dc 27px, #d4e8dc 28px); }
+
+    .rolling-card.color-1::after { background: rgba(20, 184, 166, 0.35); }
+    .rolling-card.color-2::after { background: rgba(251, 146, 60, 0.35); }
+    .rolling-card.color-3::after { background: rgba(244, 114, 182, 0.35); }
+    .rolling-card.color-4::after { background: rgba(167, 139, 250, 0.35); }
+    .rolling-card.color-5::after { background: rgba(96, 165, 250, 0.35); }
+    .rolling-card.color-6::after { background: rgba(250, 204, 21, 0.35); }
+
+    .rolling-card:nth-child(odd) { transform: rotate(-1.5deg); }
+    .rolling-card:nth-child(even) { transform: rotate(1.5deg); }
 
     .rolling-card .card-emoji {
       font-size: 32px;
@@ -1007,6 +1038,7 @@ function startConfetti() {
 // Rolling Paper
 // ══════════════════════════════════════
 const rollingMessages = [
+  { emoji: '🎉', msg: '상민님 30살 생일 축하드립니다~~ 인생은 30부터!! 항상 밝은 모습으로 업무에 임하시는 모습 보기 좋아요 ! 앞으로도 같이 즐겁게 일해보아용~~~', from: '김한용' },
   { emoji: '🎂', msg: '상민님! 생일 축하해요! 올해도 건강하고 행복한 한 해가 되길 바라요.' },
   { emoji: '🎈', msg: '생일 축하합니다~ 항상 웃는 모습만 보고 싶어요. 올해 소원 다 이루세요!' },
   { emoji: '🌟', msg: '상민아, 네가 있어서 우리 모임이 항상 즐거워! 생일 축하해!' },
@@ -1057,6 +1089,7 @@ function renderRollingPaper() {
     <div class="rolling-card ${colorClasses[i % colorClasses.length]}">
       <div class="card-emoji">${m.emoji}</div>
       <div class="card-msg">${m.msg}</div>
+      ${m.from ? `<div class="card-from">- ${m.from}</div>` : ''}
     </div>
   `).join('');
 }
