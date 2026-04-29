@@ -702,7 +702,7 @@ function drawRoulette(angle) {
 
 // ── Slot machine (per-character reels) ──
 const slotReelsContainer = document.getElementById('slot-reels');
-const CHAR_HEIGHT = 56;
+const CHAR_HEIGHT = 76;
 const HANGUL_CHARS = '가나다라마바사아자차카타파하거너더러머버서어저커터퍼허고노도로모보소오조코토포호구누두루무부수우주쿠투푸후';
 
 function initSlotDisplay(charCount) {
@@ -763,44 +763,52 @@ function spinSlotReels(targetName) {
 function startSpin() {
   if (isAnimating) return;
   isAnimating = true;
-  document.getElementById('btn-spin').disabled = true;
-  document.getElementById('btn-spin').textContent = '미션 추첨 중...';
+  var spinBtn = document.getElementById('btn-spin');
+  spinBtn.disabled = true;
+  spinBtn.textContent = '미션 추첨 중...';
   document.getElementById('roulette-result').innerHTML = '';
   initSlotDisplay(3);
 
-  const count = ROULETTE_MISSIONS.length;
-  const arc = (Math.PI * 2) / count;
-  const missionIndex = Math.floor(Math.random() * count);
-  const personIndex = Math.floor(Math.random() * ROULETTE_PEOPLE.length);
+  var count = ROULETTE_MISSIONS.length;
+  var arc = (Math.PI * 2) / count;
+  var missionIndex = Math.floor(Math.random() * count);
+  var personIndex = Math.floor(Math.random() * ROULETTE_PEOPLE.length);
 
-  const extraSpins = Math.PI * 2 * (4 + Math.random() * 3);
-  const targetAngle = -(-Math.PI / 2 - arc * missionIndex - arc / 2) + extraSpins;
+  var extraSpins = Math.PI * 2 * (4 + Math.random() * 3);
+  var targetAngle = -(-Math.PI / 2 - arc * missionIndex - arc / 2) + extraSpins;
 
-  const startAngle = rouletteAngle;
-  const totalRotation = targetAngle - startAngle;
-  const duration = 3500;
-  const startTime = performance.now();
+  var startAngle = rouletteAngle;
+  var totalRotation = targetAngle - startAngle;
+  var duration = 3500;
+  var startTime = performance.now();
 
   function animateRoulette(now) {
-    const elapsed = now - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3);
-    const currentAngle = startAngle + totalRotation * eased;
-    drawRoulette(currentAngle);
+    try {
+      var elapsed = now - startTime;
+      var progress = Math.min(elapsed / duration, 1);
+      var eased = 1 - Math.pow(1 - progress, 3);
+      var currentAngle = startAngle + totalRotation * eased;
+      drawRoulette(currentAngle);
 
-    if (progress < 1) {
-      requestAnimationFrame(animateRoulette);
-    } else {
-      rouletteAngle = currentAngle % (Math.PI * 2);
-      // Roulette done → start slot machine
-      document.getElementById('btn-spin').textContent = '당첨자 추첨 중...';
-      const targetName = ROULETTE_PEOPLE[personIndex];
-      spinSlotReels(targetName).then(() => {
-        isAnimating = false;
-        document.getElementById('btn-spin').disabled = false;
-        document.getElementById('btn-spin').textContent = '다시 돌리기!';
-        showResult(missionIndex, personIndex);
-      });
+      if (progress < 1) {
+        requestAnimationFrame(animateRoulette);
+      } else {
+        rouletteAngle = currentAngle % (Math.PI * 2);
+        // Roulette done → start slot machine
+        spinBtn.textContent = '당첨자 추첨 중...';
+        var targetName = ROULETTE_PEOPLE[personIndex];
+        spinSlotReels(targetName).then(function() {
+          isAnimating = false;
+          spinBtn.disabled = false;
+          spinBtn.textContent = '다시 돌리기!';
+          showResult(missionIndex, personIndex);
+        });
+      }
+    } catch (e) {
+      console.error('Roulette error:', e);
+      isAnimating = false;
+      spinBtn.disabled = false;
+      spinBtn.textContent = '돌려돌려!';
     }
   }
 

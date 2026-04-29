@@ -437,35 +437,35 @@ main {
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   border: 2px solid var(--glass-border);
-  border-radius: 16px;
-  padding: 16px 24px;
-  margin-bottom: 24px;
+  border-radius: 20px;
+  padding: 24px 32px;
+  margin-bottom: 28px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.08);
   text-align: center;
 }
 
 .slot-label {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--gray-500);
-  margin-bottom: 10px;
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--gray-700);
+  margin-bottom: 14px;
   letter-spacing: 1px;
 }
 
 .slot-reels {
   display: flex;
   justify-content: center;
-  gap: 4px;
+  gap: 6px;
 }
 
 .slot-col {
-  width: 44px;
-  height: 56px;
+  width: 60px;
+  height: 76px;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 12px;
   background: var(--white);
-  border: 2px solid var(--mint-200);
-  box-shadow: inset 0 2px 6px rgba(0,0,0,0.06);
+  border: 2.5px solid var(--mint-200);
+  box-shadow: inset 0 3px 8px rgba(0,0,0,0.06);
   position: relative;
 }
 
@@ -477,14 +477,19 @@ main {
 }
 
 .slot-char {
-  height: 56px;
-  width: 44px;
+  height: 76px;
+  width: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 26px;
+  font-size: 34px;
   font-weight: 900;
   color: var(--mint-600);
+}
+
+.slot-col.stopped {
+  border-color: var(--mint-400);
+  box-shadow: inset 0 3px 8px rgba(0,0,0,0.06), 0 0 12px rgba(20,184,166,0.2);
 }
 
 .slot-col.stopped .slot-char:last-child {
