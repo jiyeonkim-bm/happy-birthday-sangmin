@@ -619,7 +619,7 @@ function loadVideo() {
 }
 
 // ══════════════════════════════════════
-// Lucky Roulette
+// Lucky Roulette (Mission) + Slot Machine (Person)
 // ══════════════════════════════════════
 const ROULETTE_PEOPLE = [
   '권혁민', '김보라', '김종섭', '맹승우', '문승희',
@@ -629,49 +629,46 @@ const ROULETTE_PEOPLE = [
 const ROULETTE_MISSIONS = [
   { emoji: '☕', text: '상민님에게 커피 쏘기' },
   { emoji: '🍽️', text: '상민님 점심 사주기' },
-  { emoji: '🎤', text: '상민님 앞에서 생일 축하 노래 불러주기' },
-  { emoji: '💌', text: '상민님에게 손편지 써서 전달하기' },
   { emoji: '🍰', text: '상민님에게 케이크 or 디저트 선물하기' },
   { emoji: '📸', text: '상민님과 인생네컷 찍으러 가기' },
   { emoji: '🫶', text: '오늘 하루 상민님 칭찬 10번 하기' },
-  { emoji: '🧹', text: '상민님 자리 청소 + 간식 세팅해주기' },
-  { emoji: '🎁', text: '상민님 위시리스트에서 선물 하나 사주기' },
   { emoji: '🏃', text: '상민님이 시키는 심부름 1회 무조건 수행' },
-  { emoji: '📢', text: '팀 단톡방에 상민님 자랑 3줄 올리기' },
   { emoji: '🥤', text: '상민님에게 오늘 음료 배달하기' },
-  { emoji: '🤝', text: '상민님과 퇴근 후 산책 30분 함께하기' },
-  { emoji: '🎬', text: '상민님이 보고 싶은 영화 같이 보러 가기' },
-  { emoji: '💪', text: '상민님 업무 하나 대신 해주기' },
   { emoji: '🍜', text: '상민님이 먹고 싶은 거 배달 시켜주기' },
-  { emoji: '✏️', text: '상민님 캐리커쳐 그려서 선물하기' },
-  { emoji: '🎵', text: '상민님 전용 플레이리스트 만들어 공유하기' },
+  { emoji: '🧋', text: '상민님에게 버블티 사다주기' },
+  { emoji: '🍫', text: '상민님 간식 바구니 채워주기' },
+  { emoji: '🎂', text: '상민님에게 생일 편의점 케이크 사주기' },
+  { emoji: '🍿', text: '상민님에게 영화 관람권 선물하기' },
+  { emoji: '🧃', text: '상민님에게 일주일간 매일 음료 사주기' },
+  { emoji: '🎫', text: '상민님에게 문화상품권 선물하기' },
 ];
 
 const ROULETTE_COLORS = [
-  '#99f6e4', '#fde68a', '#f9a8d4', '#c4b5fd',
-  '#93c5fd', '#86efac', '#fdba74', '#fca5a5', '#a5b4fc'
+  '#99f6e4', '#fde68a', '#f9a8d4', '#c4b5fd', '#93c5fd',
+  '#86efac', '#fdba74', '#fca5a5', '#a5b4fc', '#fde68a',
+  '#f9a8d4', '#c4b5fd', '#99f6e4', '#86efac'
 ];
 
 const rouletteCanvas = document.getElementById('roulette-canvas');
 const rCtx = rouletteCanvas.getContext('2d');
 let rouletteAngle = 0;
-let rouletteSpinning = false;
+let isAnimating = false;
 
+// ── Draw mission roulette ──
 function drawRoulette(angle) {
   const size = rouletteCanvas.width;
   const cx = size / 2;
   const cy = size / 2;
   const r = size / 2 - 4;
-  const count = ROULETTE_PEOPLE.length;
+  const count = ROULETTE_MISSIONS.length;
   const arc = (Math.PI * 2) / count;
 
   rCtx.clearRect(0, 0, size, size);
 
-  ROULETTE_PEOPLE.forEach((name, i) => {
+  ROULETTE_MISSIONS.forEach((m, i) => {
     const startAngle = angle + arc * i;
     const endAngle = startAngle + arc;
 
-    // slice
     rCtx.beginPath();
     rCtx.moveTo(cx, cy);
     rCtx.arc(cx, cy, r, startAngle, endAngle);
@@ -682,81 +679,120 @@ function drawRoulette(angle) {
     rCtx.lineWidth = 2;
     rCtx.stroke();
 
-    // text
     rCtx.save();
     rCtx.translate(cx, cy);
     rCtx.rotate(startAngle + arc / 2);
-    rCtx.fillStyle = '#374151';
-    rCtx.font = 'bold 14px "Noto Sans KR", sans-serif';
+    rCtx.font = '20px sans-serif';
     rCtx.textAlign = 'center';
     rCtx.textBaseline = 'middle';
-    rCtx.fillText(name, r * 0.62, 0);
+    rCtx.fillText(m.emoji, r * 0.68, 0);
     rCtx.restore();
   });
 
-  // center circle
+  // center
   rCtx.beginPath();
-  rCtx.arc(cx, cy, 22, 0, Math.PI * 2);
+  rCtx.arc(cx, cy, 26, 0, Math.PI * 2);
   rCtx.fillStyle = '#ffffff';
   rCtx.fill();
-  rCtx.strokeStyle = var_mint_400();
+  rCtx.strokeStyle = '#2dd4bf';
   rCtx.lineWidth = 3;
   rCtx.stroke();
 
   rCtx.fillStyle = '#0d9488';
-  rCtx.font = 'bold 11px "Noto Sans KR", sans-serif';
+  rCtx.font = 'bold 10px "Noto Sans KR", sans-serif';
   rCtx.textAlign = 'center';
   rCtx.textBaseline = 'middle';
-  rCtx.fillText('GO!', cx, cy);
+  rCtx.fillText('MISSION', cx, cy);
 }
 
-function var_mint_400() { return '#2dd4bf'; }
+// ── Slot machine ──
+const slotReel = document.getElementById('slot-reel');
+const ITEM_HEIGHT = 52;
 
-function spinRoulette() {
-  if (rouletteSpinning) return;
-  rouletteSpinning = true;
+function initSlot() {
+  slotReel.innerHTML = ROULETTE_PEOPLE.map(name =>
+    `<div class="slot-item">${name}</div>`
+  ).join('');
+  slotReel.style.transform = 'translateY(0px)';
+}
+
+function spinSlot(targetIndex) {
+  return new Promise(resolve => {
+    // Build a long reel: repeat names many times + end on target
+    const repeats = 6;
+    const totalItems = ROULETTE_PEOPLE.length * repeats + targetIndex + 1;
+    let html = '';
+    for (let i = 0; i < totalItems; i++) {
+      const name = ROULETTE_PEOPLE[i % ROULETTE_PEOPLE.length];
+      html += `<div class="slot-item">${name}</div>`;
+    }
+    slotReel.innerHTML = html;
+    slotReel.style.transition = 'none';
+    slotReel.style.transform = 'translateY(0px)';
+
+    // force reflow
+    slotReel.offsetHeight;
+
+    const targetY = -(totalItems - 1) * ITEM_HEIGHT;
+    slotReel.style.transition = `transform 3s cubic-bezier(0.15, 0.85, 0.35, 1)`;
+    slotReel.style.transform = `translateY(${targetY}px)`;
+
+    setTimeout(() => {
+      resolve();
+    }, 3200);
+  });
+}
+
+// ── Main spin flow: roulette first, then slot ──
+function startSpin() {
+  if (isAnimating) return;
+  isAnimating = true;
   document.getElementById('btn-spin').disabled = true;
-  document.getElementById('btn-spin').textContent = '돌아가는 중...';
+  document.getElementById('btn-spin').textContent = '미션 추첨 중...';
   document.getElementById('roulette-result').innerHTML = '';
+  initSlot();
 
-  const count = ROULETTE_PEOPLE.length;
+  const count = ROULETTE_MISSIONS.length;
   const arc = (Math.PI * 2) / count;
-  const extraSpins = Math.PI * 2 * (5 + Math.random() * 3); // 5~8 full spins
-  const targetIndex = Math.floor(Math.random() * count);
-  // pointer is at top (270deg = -PI/2), we need the target slice center to land there
-  const targetAngle = -(-Math.PI / 2 - arc * targetIndex - arc / 2) + extraSpins;
+  const missionIndex = Math.floor(Math.random() * count);
+  const personIndex = Math.floor(Math.random() * ROULETTE_PEOPLE.length);
+
+  const extraSpins = Math.PI * 2 * (4 + Math.random() * 3);
+  const targetAngle = -(-Math.PI / 2 - arc * missionIndex - arc / 2) + extraSpins;
 
   const startAngle = rouletteAngle;
   const totalRotation = targetAngle - startAngle;
-  const duration = 4000;
+  const duration = 3500;
   const startTime = performance.now();
 
-  function animate(now) {
+  function animateRoulette(now) {
     const elapsed = now - startTime;
     const progress = Math.min(elapsed / duration, 1);
-    // ease-out cubic
     const eased = 1 - Math.pow(1 - progress, 3);
     const currentAngle = startAngle + totalRotation * eased;
-
     drawRoulette(currentAngle);
 
     if (progress < 1) {
-      requestAnimationFrame(animate);
+      requestAnimationFrame(animateRoulette);
     } else {
       rouletteAngle = currentAngle % (Math.PI * 2);
-      rouletteSpinning = false;
-      document.getElementById('btn-spin').disabled = false;
-      document.getElementById('btn-spin').textContent = '다시 돌리기!';
-      showRouletteResult(targetIndex);
+      // Roulette done → start slot machine
+      document.getElementById('btn-spin').textContent = '당첨자 추첨 중...';
+      spinSlot(personIndex).then(() => {
+        isAnimating = false;
+        document.getElementById('btn-spin').disabled = false;
+        document.getElementById('btn-spin').textContent = '다시 돌리기!';
+        showResult(missionIndex, personIndex);
+      });
     }
   }
 
-  requestAnimationFrame(animate);
+  requestAnimationFrame(animateRoulette);
 }
 
-function showRouletteResult(personIndex) {
+function showResult(missionIndex, personIndex) {
+  const mission = ROULETTE_MISSIONS[missionIndex];
   const person = ROULETTE_PEOPLE[personIndex];
-  const mission = ROULETTE_MISSIONS[Math.floor(Math.random() * ROULETTE_MISSIONS.length)];
   document.getElementById('roulette-result').innerHTML = `
     <div class="roulette-result-card">
       <div class="result-emoji">${mission.emoji}</div>
@@ -766,5 +802,6 @@ function showRouletteResult(personIndex) {
   `;
 }
 
-document.getElementById('btn-spin').addEventListener('click', spinRoulette);
+document.getElementById('btn-spin').addEventListener('click', startSpin);
 drawRoulette(0);
+initSlot();
