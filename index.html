@@ -1293,6 +1293,60 @@ function startConfetti() {
 }
 
 // ══════════════════════════════════════
+// Firebase Setup
+// ══════════════════════════════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyCUJlpEcG7Eo8V4ONJvOG2FwVlwoahnxcg",
+  authDomain: "hbd-sangmin.firebaseapp.com",
+  projectId: "hbd-sangmin",
+  storageBucket: "hbd-sangmin.firebasestorage.app",
+  messagingSenderId: "991634938597",
+  appId: "1:991634938597:web:1249191a134625d788520c"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const photosCollection = db.collection('photos');
+
+// ══════════════════════════════════════
+// Firebase Photo Functions (Firestore only)
+// ══════════════════════════════════════
+async function savePhotoFirebase(dataUrl, stamp) {
+  const id = Date.now().toString();
+  let finalUrl = dataUrl;
+  if (dataUrl.length > 800000) {
+    const tmpCanvas = document.createElement('canvas');
+    const tmpCtx = tmpCanvas.getContext('2d');
+    const img = new Image();
+    await new Promise(r => { img.onload = r; img.src = dataUrl; });
+    const scale = 0.5;
+    tmpCanvas.width = img.width * scale;
+    tmpCanvas.height = img.height * scale;
+    tmpCtx.drawImage(img, 0, 0, tmpCanvas.width, tmpCanvas.height);
+    finalUrl = tmpCanvas.toDataURL('image/jpeg', 0.5);
+  }
+  await photosCollection.doc(id).set({
+    src: finalUrl,
+    date: stamp,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+  return { id, src: finalUrl, date: stamp };
+}
+
+async function loadAllPhotos() {
+  const snapshot = await photosCollection.orderBy('createdAt', 'desc').get();
+  return snapshot.docs.map(doc => ({
+    id: doc.id,
+    src: doc.data().src,
+    date: doc.data().date
+  }));
+}
+
+async function deletePhotoFirebase(id) {
+  await photosCollection.doc(id).delete();
+}
+
+// ══════════════════════════════════════
 // Rolling Paper
 // ══════════════════════════════════════
 const rollingMessages = [
@@ -1482,60 +1536,6 @@ renderRollingPaper();
 loadFirestoreMessages().then(() => {
   if (firestoreMessages.length > 0) renderRollingPaper();
 });
-
-// ══════════════════════════════════════
-// Firebase Setup
-// ══════════════════════════════════════
-const firebaseConfig = {
-  apiKey: "AIzaSyCUJlpEcG7Eo8V4ONJvOG2FwVlwoahnxcg",
-  authDomain: "hbd-sangmin.firebaseapp.com",
-  projectId: "hbd-sangmin",
-  storageBucket: "hbd-sangmin.firebasestorage.app",
-  messagingSenderId: "991634938597",
-  appId: "1:991634938597:web:1249191a134625d788520c"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const photosCollection = db.collection('photos');
-
-// ══════════════════════════════════════
-// Firebase Photo Functions (Firestore only)
-// ══════════════════════════════════════
-async function savePhotoFirebase(dataUrl, stamp) {
-  const id = Date.now().toString();
-  let finalUrl = dataUrl;
-  if (dataUrl.length > 800000) {
-    const tmpCanvas = document.createElement('canvas');
-    const tmpCtx = tmpCanvas.getContext('2d');
-    const img = new Image();
-    await new Promise(r => { img.onload = r; img.src = dataUrl; });
-    const scale = 0.5;
-    tmpCanvas.width = img.width * scale;
-    tmpCanvas.height = img.height * scale;
-    tmpCtx.drawImage(img, 0, 0, tmpCanvas.width, tmpCanvas.height);
-    finalUrl = tmpCanvas.toDataURL('image/jpeg', 0.5);
-  }
-  await photosCollection.doc(id).set({
-    src: finalUrl,
-    date: stamp,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  });
-  return { id, src: finalUrl, date: stamp };
-}
-
-async function loadAllPhotos() {
-  const snapshot = await photosCollection.orderBy('createdAt', 'desc').get();
-  return snapshot.docs.map(doc => ({
-    id: doc.id,
-    src: doc.data().src,
-    date: doc.data().date
-  }));
-}
-
-async function deletePhotoFirebase(id) {
-  await photosCollection.doc(id).delete();
-}
 
 // ══════════════════════════════════════
 // Photo Booth
