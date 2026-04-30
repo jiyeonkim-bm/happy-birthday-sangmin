@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Chiron+GoRound+TC:wght@200..900&family=Nanum+Pen+Script&family=Gaegu&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=9">
+  <link rel="stylesheet" href="css/style.css?v=10">
 </head>
 <body>
 
@@ -221,9 +221,26 @@
   </div>
 </div>
 
+<!-- Photo Editor (Sticker Decoration) -->
+<div class="photo-editor-overlay" id="photo-editor">
+  <div class="photo-editor-card">
+    <h3>스티커로 꾸며보세요 ✨</h3>
+    <div class="photo-editor-stage" id="photo-editor-stage">
+      <img id="photo-editor-img" src="" alt="captured">
+      <div class="photo-editor-stickers" id="photo-editor-stickers"></div>
+    </div>
+    <div class="photo-sticker-palette" id="photo-sticker-palette"></div>
+    <p class="photo-editor-hint">스티커를 눌러 추가하고, 드래그로 이동 · 모서리로 크기조절</p>
+    <div class="write-actions">
+      <button class="btn btn-mint" id="btn-photo-save">저장</button>
+      <button class="btn btn-outline" id="btn-photo-cancel">취소</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
-<script src="js/app.js?v=8"></script>
+<script src="js/app.js?v=9"></script>
 
 </body>
 </html>

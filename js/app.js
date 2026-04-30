@@ -519,22 +519,236 @@ btnCapture.addEventListener('click', async () => {
   pCtx.font = `bold ${Math.round(photoCanvas.width * 0.025)}px 'Noto Sans KR', sans-serif`;
   pCtx.fillText('HBD 상민 🎂', photoCanvas.width - 20, photoCanvas.height - 50);
 
-  const dataUrl = photoCanvas.toDataURL('image/jpeg', 0.5);
-  showPreview(dataUrl);
+  const dataUrl = photoCanvas.toDataURL('image/jpeg', 0.7);
+  openPhotoEditor(dataUrl, stamp);
+});
 
-  try {
-    btnCapture.style.pointerEvents = 'none';
-    const photo = await savePhotoFirebase(dataUrl, stamp);
-    photos.unshift(photo);
-    renderGallery();
-  } catch (e) {
-    console.error('Firebase save error:', e);
-    alert('사진 저장 실패: ' + e.message);
-    photos.unshift({ id: Date.now().toString(), src: dataUrl, date: stamp });
-    renderGallery();
-  } finally {
-    btnCapture.style.pointerEvents = '';
+// ══════════════════════════════════════
+// Photo Editor (Sticker Decoration)
+// ══════════════════════════════════════
+const PHOTO_STICKERS = [
+  'balloon1.png','balloon3.png','party_balloon.png','gift.png','confetti.png',
+  'ribbon.png','ribbon2.png','medal.png','trophy.png','sparkle2.png',
+  'sparkle3.png','pencil.png','megaphone.png','megaphone2.png'
+];
+
+const whiteStickerCache = {};
+
+function loadWhiteSticker(name) {
+  return new Promise((resolve, reject) => {
+    if (whiteStickerCache[name]) { resolve(whiteStickerCache[name]); return; }
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const w = img.naturalWidth > 0 ? img.naturalWidth : 200;
+        const h = img.naturalHeight > 0 ? img.naturalHeight : 200;
+        const c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        const ctx = c.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        ctx.globalCompositeOperation = 'source-in';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, w, h);
+        const whiteImg = new Image();
+        whiteImg.onload = () => { whiteStickerCache[name] = whiteImg; resolve(whiteImg); };
+        whiteImg.onerror = reject;
+        whiteImg.src = c.toDataURL('image/png');
+      } catch (e) { reject(e); }
+    };
+    img.onerror = reject;
+    img.src = 'img/stickers/' + name;
+  });
+}
+
+// Preload white versions
+PHOTO_STICKERS.forEach(name => { loadWhiteSticker(name).catch(() => {}); });
+
+const photoEditor = {
+  baseDataUrl: '',
+  stamp: '',
+  stickers: [],
+  drag: null
+};
+
+function openPhotoEditor(dataUrl, stamp) {
+  photoEditor.baseDataUrl = dataUrl;
+  photoEditor.stamp = stamp;
+  photoEditor.stickers = [];
+  document.getElementById('photo-editor-img').src = dataUrl;
+  document.getElementById('photo-editor-stickers').innerHTML = '';
+  document.getElementById('photo-editor').classList.add('show');
+}
+
+function closePhotoEditor() {
+  document.getElementById('photo-editor').classList.remove('show');
+  photoEditor.stickers = [];
+  photoEditor.baseDataUrl = '';
+}
+
+function renderPlacedStickers() {
+  const container = document.getElementById('photo-editor-stickers');
+  container.innerHTML = photoEditor.stickers.map(s => `
+    <div class="placed-sticker" data-id="${s.id}" style="left:${s.x}px;top:${s.y}px;width:${s.size}px;height:${s.size}px;">
+      <img src="img/stickers/${s.name}" alt="sticker">
+      <button class="sticker-delete" type="button">×</button>
+      <div class="sticker-resize"></div>
+    </div>
+  `).join('');
+  container.querySelectorAll('.placed-sticker').forEach(attachStickerHandlers);
+}
+
+function attachStickerHandlers(el) {
+  const id = el.dataset.id;
+
+  el.addEventListener('pointerdown', (e) => {
+    if (e.target.classList.contains('sticker-delete')) {
+      e.stopPropagation();
+      photoEditor.stickers = photoEditor.stickers.filter(s => s.id !== id);
+      renderPlacedStickers();
+      return;
+    }
+    const sticker = photoEditor.stickers.find(s => s.id === id);
+    if (!sticker) return;
+    const isResize = e.target.classList.contains('sticker-resize');
+
+    // Bring to top
+    el.parentElement.appendChild(el);
+    photoEditor.stickers = photoEditor.stickers.filter(s => s.id !== id);
+    photoEditor.stickers.push(sticker);
+
+    photoEditor.drag = {
+      id, mode: isResize ? 'resize' : 'move',
+      startX: e.clientX, startY: e.clientY,
+      origX: sticker.x, origY: sticker.y, origSize: sticker.size
+    };
+    el.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+
+  el.addEventListener('pointermove', (e) => {
+    if (!photoEditor.drag || photoEditor.drag.id !== id) return;
+    const sticker = photoEditor.stickers.find(s => s.id === id);
+    if (!sticker) return;
+    const dx = e.clientX - photoEditor.drag.startX;
+    const dy = e.clientY - photoEditor.drag.startY;
+    if (photoEditor.drag.mode === 'move') {
+      sticker.x = photoEditor.drag.origX + dx;
+      sticker.y = photoEditor.drag.origY + dy;
+      el.style.left = sticker.x + 'px';
+      el.style.top = sticker.y + 'px';
+    } else {
+      const newSize = Math.max(30, photoEditor.drag.origSize + (dx + dy) / 2);
+      sticker.size = newSize;
+      el.style.width = newSize + 'px';
+      el.style.height = newSize + 'px';
+    }
+  });
+
+  const endDrag = () => {
+    if (photoEditor.drag && photoEditor.drag.id === id) {
+      photoEditor.drag = null;
+    }
+  };
+  el.addEventListener('pointerup', endDrag);
+  el.addEventListener('pointercancel', endDrag);
+}
+
+function addStickerToPhoto(name) {
+  const stage = document.getElementById('photo-editor-stage');
+  const rect = stage.getBoundingClientRect();
+  const size = Math.min(80, rect.width * 0.2);
+  photoEditor.stickers.push({
+    id: 'st-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+    name: name,
+    x: rect.width / 2 - size / 2,
+    y: rect.height / 2 - size / 2,
+    size: size
+  });
+  renderPlacedStickers();
+}
+
+(function initPhotoStickerPalette() {
+  const palette = document.getElementById('photo-sticker-palette');
+  palette.innerHTML = PHOTO_STICKERS.map(name =>
+    `<button class="photo-sticker-btn" type="button" data-sticker="${name}"><img src="img/stickers/${name}" alt="sticker"></button>`
+  ).join('');
+  palette.querySelectorAll('.photo-sticker-btn').forEach(btn => {
+    btn.addEventListener('click', () => addStickerToPhoto(btn.dataset.sticker));
+  });
+})();
+
+async function composePhotoWithStickers() {
+  const baseImg = new Image();
+  await new Promise((resolve, reject) => {
+    baseImg.onload = resolve;
+    baseImg.onerror = reject;
+    baseImg.src = photoEditor.baseDataUrl;
+  });
+  const finalCanvas = document.createElement('canvas');
+  finalCanvas.width = baseImg.naturalWidth;
+  finalCanvas.height = baseImg.naturalHeight;
+  const fctx = finalCanvas.getContext('2d');
+  fctx.drawImage(baseImg, 0, 0);
+
+  if (photoEditor.stickers.length > 0) {
+    const stage = document.getElementById('photo-editor-stage');
+    const rect = stage.getBoundingClientRect();
+    const ratioX = baseImg.naturalWidth / rect.width;
+    const ratioY = baseImg.naturalHeight / rect.height;
+
+    for (const s of photoEditor.stickers) {
+      const whiteImg = await loadWhiteSticker(s.name);
+      const dx = s.x * ratioX;
+      const dy = s.y * ratioY;
+      const dw = s.size * ratioX;
+      const dh = s.size * ratioY;
+      fctx.drawImage(whiteImg, dx, dy, dw, dh);
+    }
   }
+
+  let dataUrl = finalCanvas.toDataURL('image/jpeg', 0.7);
+  if (dataUrl.length > 800000) {
+    const tmpCanvas = document.createElement('canvas');
+    const scale = 0.7;
+    tmpCanvas.width = finalCanvas.width * scale;
+    tmpCanvas.height = finalCanvas.height * scale;
+    tmpCanvas.getContext('2d').drawImage(finalCanvas, 0, 0, tmpCanvas.width, tmpCanvas.height);
+    dataUrl = tmpCanvas.toDataURL('image/jpeg', 0.6);
+  }
+  return dataUrl;
+}
+
+document.getElementById('btn-photo-save').addEventListener('click', async () => {
+  const btn = document.getElementById('btn-photo-save');
+  btn.textContent = '저장 중...';
+  btn.disabled = true;
+  try {
+    const finalUrl = await composePhotoWithStickers();
+    const stamp = photoEditor.stamp;
+    closePhotoEditor();
+    showPreview(finalUrl);
+    try {
+      const photo = await savePhotoFirebase(finalUrl, stamp);
+      photos.unshift(photo);
+      renderGallery();
+    } catch (e) {
+      console.error('Firebase save error:', e);
+      alert('사진 저장 실패: ' + e.message);
+      photos.unshift({ id: Date.now().toString(), src: finalUrl, date: stamp });
+      renderGallery();
+    }
+  } catch (e) {
+    console.error('Compose error:', e);
+    alert('저장에 실패했어요: ' + e.message);
+  } finally {
+    btn.textContent = '저장';
+    btn.disabled = false;
+  }
+});
+
+document.getElementById('btn-photo-cancel').addEventListener('click', closePhotoEditor);
+document.getElementById('photo-editor').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closePhotoEditor();
 });
 
 function renderGallery() {
