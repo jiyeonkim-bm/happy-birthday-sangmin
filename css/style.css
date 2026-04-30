@@ -615,8 +615,9 @@ main {
 
 /* ── Video Page ── */
 .video-section { display: flex; flex-direction: column; align-items: center; }
-.video-wrap { width: 100%; max-width: 640px; aspect-ratio: 16 / 9; border-radius: var(--radius); overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15); border: 3px solid var(--glass-border); background: var(--gray-900); }
+.video-wrap { width: 100%; max-width: 360px; aspect-ratio: 9 / 16; border-radius: var(--radius); overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15); border: 3px solid var(--glass-border); background: var(--gray-900); }
 .video-wrap iframe { width: 100%; height: 100%; border: none; }
+.video-wrap video { width: 100%; height: 100%; object-fit: contain; display: block; background: #000; }
 
 /* ══════════════════════════════════════
    Roulette + Slot Machine

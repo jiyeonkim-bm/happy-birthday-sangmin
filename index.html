@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Chiron+GoRound+TC:wght@200..900&family=Nanum+Pen+Script&family=Gaegu&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=10">
+  <link rel="stylesheet" href="css/style.css?v=11">
 </head>
 <body>
 
@@ -83,7 +83,10 @@
         <p>상민님을 위한 특별한 영상</p>
       </div>
       <div class="video-wrap">
-        <div id="yt-player"></div>
+        <video id="hbd-video" controls playsinline preload="metadata">
+          <source src="video/sm_hbd.MOV" type="video/mp4">
+          영상을 재생할 수 없어요.
+        </video>
       </div>
     </div>
   </section>
@@ -240,7 +243,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
-<script src="js/app.js?v=9"></script>
+<script src="js/app.js?v=10"></script>
 
 </body>
 </html>
